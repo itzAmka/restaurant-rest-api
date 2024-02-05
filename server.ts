@@ -5,12 +5,12 @@ import dotenv from 'dotenv';
 import { errorMiddleware } from './middlewares/error-middleware';
 
 /* --------- routes imports --------- */
-import adminRoutes from './routes/admin-routes';
 import adminProfileRoutes from './routes/admin/profile-routes';
 import adminAuthRoutes from './routes/admin/auth-routes';
 import adminOrderRoutes from './routes/admin/order-routes';
 import adminMenuRoutes from 'routes/admin/menu-routes';
 import adminOrderItemRoutes from 'routes/admin/order-item-routes';
+import adminCustomerRoutes from './routes/admin/customer-routes';
 
 dotenv.config();
 
@@ -28,12 +28,12 @@ app.get('/', (req, res) => {
 });
 
 // admin routes
-app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/admin/profile', adminProfileRoutes);
 app.use('/api/v1/admin/auth', adminAuthRoutes);
 app.use('/api/v1/admin/orders', adminOrderRoutes);
 app.use('/api/v1/admin/menu', adminMenuRoutes);
 app.use('/api/v1/admin/order-item', adminOrderItemRoutes);
+app.use('/api/v1/admin/customers', adminCustomerRoutes);
 
 /* -------- handle 404 errors ------- */
 app.use('*', (req, res) => {
