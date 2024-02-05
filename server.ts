@@ -7,6 +7,7 @@ import { errorMiddleware } from './middlewares/error-middleware';
 /* --------- routes imports --------- */
 import adminRoutes from './routes/admin-routes';
 import adminAuthRoutes from './routes/admin/auth-routes';
+import adminProfileRoutes from './routes/admin/profile-routes';
 
 dotenv.config();
 
@@ -23,8 +24,9 @@ app.get('/', (req, res) => {
 	res.json({ message: 'Welcome to the API' });
 });
 
-// admin auth routes
+// admin routes
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/admin/profile', adminProfileRoutes);
 app.use('/api/v1/admin/auth', adminAuthRoutes);
 
 /* -------- handle 404 errors ------- */
