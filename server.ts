@@ -1,11 +1,16 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 
-// middlewares
+/* ------- middlewares imports ------ */
 import { errorMiddleware } from './middlewares/error-middleware';
 
-// routes
-import adminRoutes from './routes/admin-routes';
+/* --------- routes imports --------- */
+import adminProfileRoutes from './routes/admin/profile-routes';
+import adminAuthRoutes from './routes/admin/auth-routes';
+import adminOrderRoutes from './routes/admin/order-routes';
+import adminMenuRoutes from './routes/admin/menu-routes';
+import adminOrderItemRoutes from './routes/admin/order-item-routes';
+import adminCustomerRoutes from './routes/admin/customer-routes';
 
 dotenv.config();
 
@@ -13,17 +18,24 @@ const PORT = process.env.PORT ?? 3000;
 
 const app: Express = express();
 
+/* -------- middlewares setup -------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+/* ----------- routes setup ---------- */
 app.get('/', (req, res) => {
 	res.json({ message: 'Welcome to the API' });
 });
 
-// routes
-app.use('/api/v1/admin', adminRoutes);
+// admin routes
+app.use('/api/v1/admin/profile', adminProfileRoutes);
+app.use('/api/v1/admin/auth', adminAuthRoutes);
+app.use('/api/v1/admin/orders', adminOrderRoutes);
+app.use('/api/v1/admin/menu', adminMenuRoutes);
+app.use('/api/v1/admin/order-item', adminOrderItemRoutes);
+app.use('/api/v1/admin/customers', adminCustomerRoutes);
 
-// handle 404 errors
+/* -------- handle 404 errors ------- */
 app.use('*', (req, res) => {
 	res.status(404).json({
 		error: 'Not found ',
@@ -31,7 +43,7 @@ app.use('*', (req, res) => {
 	});
 });
 
-// error middleware
+/* -------- error middleware -------- */
 app.use(errorMiddleware);
 
 app.listen(PORT, () =>
