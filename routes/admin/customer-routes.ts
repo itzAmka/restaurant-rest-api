@@ -10,7 +10,7 @@ const adminCustomerRoutes = Router();
  * @description Get all customers
  * @access Private
  */
-adminCustomerRoutes.get('/customers', (req, res) => {
+adminCustomerRoutes.get('/', (req, res) => {
 	res.json({ message: 'Get all customers' });
 });
 
@@ -20,7 +20,7 @@ adminCustomerRoutes.get('/customers', (req, res) => {
  * @description Get customer by id
  * @access Private
  */
-adminCustomerRoutes.get('/customers/:id', (req, res) => {
+adminCustomerRoutes.get('/:id', (req, res) => {
 	res.json({ message: 'Get customer by id' });
 });
 
@@ -30,7 +30,7 @@ adminCustomerRoutes.get('/customers/:id', (req, res) => {
  * @description Update customer by id
  * @access Private
  */
-adminCustomerRoutes.put('/customers/:id', (req, res) => {
+adminCustomerRoutes.patch('/:id', (req, res) => {
 	res.json({ message: 'Update customer by id' });
 });
 
@@ -40,7 +40,7 @@ adminCustomerRoutes.put('/customers/:id', (req, res) => {
  * @description Delete customer by id
  * @access Private
  */
-adminCustomerRoutes.delete('/customers/:id', (req, res) => {
+adminCustomerRoutes.delete('/:id', (req, res) => {
 	res.json({ message: 'Delete customer by id' });
 });
 

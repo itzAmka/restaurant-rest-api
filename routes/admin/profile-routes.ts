@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-const admingProfileRoutes = Router();
+const adminProfileRoutes = Router();
 
 /* --------- ADMINS INFO -------- */
 
@@ -10,7 +10,7 @@ const admingProfileRoutes = Router();
  * @description Get all admins
  * @access Private
  */
-admingProfileRoutes.get('/profile', (req, res) => {
+adminProfileRoutes.get('/', (req, res) => {
 	res.json({ message: 'Get all admins' });
 });
 
@@ -20,7 +20,7 @@ admingProfileRoutes.get('/profile', (req, res) => {
  * @description Get admin by id
  * @access Private
  */
-admingProfileRoutes.get('/profile/:id', (req, res) => {
+adminProfileRoutes.get('/:id', (req, res) => {
 	res.json({ message: 'Get admin by id' });
 });
 
@@ -30,7 +30,7 @@ admingProfileRoutes.get('/profile/:id', (req, res) => {
  * @description Update admin by id
  * @access Private
  */
-admingProfileRoutes.put('/profile/:id', (req, res) => {
+adminProfileRoutes.patch('/:id', (req, res) => {
 	res.json({ message: 'Update admin by id' });
 });
 
@@ -40,8 +40,8 @@ admingProfileRoutes.put('/profile/:id', (req, res) => {
  * @description Delete admin by id
  * @access Private
  */
-admingProfileRoutes.delete('/profile/:id', (req, res) => {
+adminProfileRoutes.delete('/:id', (req, res) => {
 	res.json({ message: 'Delete admin by id' });
 });
 
-export default admingProfileRoutes;
+export default adminProfileRoutes;

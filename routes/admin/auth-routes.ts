@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-const admingAuthRoutes = Router();
+const adminAuthRoutes = Router();
 
 /* ----------- ADMIN AUTH ----------- */
 
@@ -10,7 +10,7 @@ const admingAuthRoutes = Router();
  * @description Create a new admin, only SUPER_ADMIN can create a new admin
  * @access Private
  */
-admingAuthRoutes.post('/register', (req, res) => {
+adminAuthRoutes.post('/register', (req, res) => {
 	res.json({ message: 'Create a new admin' });
 });
 
@@ -20,8 +20,8 @@ admingAuthRoutes.post('/register', (req, res) => {
  * @description Login admin
  * @access Private
  */
-admingAuthRoutes.post('/login', (req, res) => {
+adminAuthRoutes.post('/login', (req, res) => {
 	res.json({ message: 'Login admin' });
 });
 
-export default admingAuthRoutes;
+export default adminAuthRoutes;

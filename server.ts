@@ -8,8 +8,8 @@ import { errorMiddleware } from './middlewares/error-middleware';
 import adminProfileRoutes from './routes/admin/profile-routes';
 import adminAuthRoutes from './routes/admin/auth-routes';
 import adminOrderRoutes from './routes/admin/order-routes';
-import adminMenuRoutes from 'routes/admin/menu-routes';
-import adminOrderItemRoutes from 'routes/admin/order-item-routes';
+import adminMenuRoutes from './routes/admin/menu-routes';
+import adminOrderItemRoutes from './routes/admin/order-item-routes';
 import adminCustomerRoutes from './routes/admin/customer-routes';
 
 dotenv.config();
