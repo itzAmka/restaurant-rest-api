@@ -2,58 +2,6 @@ import { Router } from 'express';
 
 const admingRoutes = Router();
 
-/* ---------- ADMIN ORDERS ---------- */
-
-/**
- * @path /api/v1/admin/orders
- * @method GET
- * @description Get all orders
- * @access Private
- */
-admingRoutes.get('/orders', (req, res) => {
-	res.json({ message: 'Get all orders' });
-});
-
-/**
- * @path /api/v1/admin/orders/:id
- * @method GET
- * @description Get order by id
- * @access Private
- */
-admingRoutes.get('/orders/:id', (req, res) => {
-	res.json({ message: 'Get order by id' });
-});
-
-/**
- * @path /api/v1/admin/orders
- * @method POST
- * @description Create a new order
- * @access Private
- */
-admingRoutes.post('/orders', (req, res) => {
-	res.json({ message: 'Create a new order' });
-});
-
-/**
- * @path /api/v1/admin/orders/:id
- * @method PATCH
- * @description Update order by id
- * @access Private
- */
-admingRoutes.put('/orders/:id', (req, res) => {
-	res.json({ message: 'Update order by id' });
-});
-
-/**
- * @path /api/v1/admin/orders/:id
- * @method DELETE
- * @description Delete order by id
- * @access Private
- */
-admingRoutes.delete('/orders/:id', (req, res) => {
-	res.json({ message: 'Delete order by id' });
-});
-
 /* -------- ADMIN MENU ITEMS -------- */
 
 /**
