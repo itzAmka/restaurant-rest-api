@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import dotenv from 'dotenv';
 
 // middlewares
-import { errorMiddleware } from './middlewares/errorMiddleware';
+import { errorMiddleware } from './middlewares/error-middleware';
 
 // routes
 import adminRoutes from './routes/admin-routes';
