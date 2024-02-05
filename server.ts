@@ -6,8 +6,8 @@ import { errorMiddleware } from './middlewares/error-middleware';
 
 /* --------- routes imports --------- */
 import adminRoutes from './routes/admin-routes';
-import adminAuthRoutes from './routes/admin/auth-routes';
 import adminProfileRoutes from './routes/admin/profile-routes';
+import adminAuthRoutes from './routes/admin/auth-routes';
 
 dotenv.config();
 

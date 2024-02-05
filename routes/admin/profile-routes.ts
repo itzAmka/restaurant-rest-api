@@ -43,3 +43,5 @@ admingProfileRoutes.put('/profile/:id', (req, res) => {
 admingProfileRoutes.delete('/profile/:id', (req, res) => {
 	res.json({ message: 'Delete admin by id' });
 });
+
+export default admingProfileRoutes;
