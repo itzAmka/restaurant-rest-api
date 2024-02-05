@@ -20,10 +20,18 @@ enum OrderStatus {
   PICKED_UP
 }
 
+enum AdminRole {
+  SUPER_ADMIN // Overall system administration and management.
+  ADMIN // Day-to-day administration tasks.
+  MANAGER // Manage staff and customers.
+  STAFF // Manage orders and customers.
+}
+
 model Admin {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  email    String @unique
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  email    String    @unique
   password String
+  role     AdminRole
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
