@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 // middlewares
 import { errorMiddleware } from './middlewares/errorMiddleware';
 
+// routes
+import adminRoutes from './routes/admin-routes';
+
 dotenv.config();
 
 const PORT = process.env.PORT ?? 3000;
@@ -16,6 +19,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
 	res.json({ message: 'Welcome to the API' });
 });
+
+// routes
+app.use('/api/v1/admin', adminRoutes);
 
 // handle 404 errors
 app.use('*', (req, res) => {
