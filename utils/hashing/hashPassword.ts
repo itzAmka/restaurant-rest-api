@@ -5,7 +5,11 @@ import bcrypt from 'bcryptjs';
  * @returns {string} hashed password
  */
 export const hashPassword = async (password: string): Promise<string> => {
-	const salt = await bcrypt.genSalt(12);
-	const hashedPassword = await bcrypt.hash(password, salt);
-	return hashedPassword;
+	try {
+		const salt = await bcrypt.genSalt(12);
+		const hashedPassword = await bcrypt.hash(password, salt);
+		return hashedPassword;
+	} catch (error) {
+		throw new Error('Failed to hash password');
+	}
 };
