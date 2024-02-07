@@ -30,4 +30,14 @@ adminAuthRoutes.post(
  */
 adminAuthRoutes.post('/login', loginAdminController);
 
+/**
+ * @path /api/v1/admin/auth/refresh-token
+ * @method GET
+ * @description Refresh access token
+ * @access Private
+ */
+adminAuthRoutes.get('/refresh-token', (req, res) => {
+	res.send('Refresh token');
+});
+
 export default adminAuthRoutes;
