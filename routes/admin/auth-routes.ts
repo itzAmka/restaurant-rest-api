@@ -4,6 +4,7 @@ import {
 	registerAdminController,
 	loginAdminController,
 } from '../../controllers/auth-controller';
+import { isSuperAdminMiddleware } from '../../middlewares/is-super-admin-middleware';
 
 const adminAuthRoutes = Router();
 
@@ -15,7 +16,11 @@ const adminAuthRoutes = Router();
  * @description Create a new admin, only SUPER_ADMIN can create a new admin
  * @access Private
  */
-adminAuthRoutes.post('/register', registerAdminController);
+adminAuthRoutes.post(
+	'/register',
+	isSuperAdminMiddleware,
+	registerAdminController,
+);
 
 /**
  * @path /api/v1/admin/auth/login
