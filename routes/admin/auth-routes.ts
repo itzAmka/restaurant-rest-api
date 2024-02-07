@@ -1,5 +1,10 @@
 import { Router } from 'express';
 
+import {
+	registerAdminController,
+	loginAdminController,
+} from '../../controllers/auth-controller';
+
 const adminAuthRoutes = Router();
 
 /* ----------- ADMIN AUTH ----------- */
@@ -10,9 +15,7 @@ const adminAuthRoutes = Router();
  * @description Create a new admin, only SUPER_ADMIN can create a new admin
  * @access Private
  */
-adminAuthRoutes.post('/register', (req, res) => {
-	res.json({ message: 'Create a new admin' });
-});
+adminAuthRoutes.post('/register', registerAdminController);
 
 /**
  * @path /api/v1/admin/auth/login
@@ -20,8 +23,6 @@ adminAuthRoutes.post('/register', (req, res) => {
  * @description Login admin
  * @access Private
  */
-adminAuthRoutes.post('/login', (req, res) => {
-	res.json({ message: 'Login admin' });
-});
+adminAuthRoutes.post('/login', loginAdminController);
 
 export default adminAuthRoutes;

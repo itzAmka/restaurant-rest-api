@@ -57,6 +57,7 @@ export const registerAdmin = async (
 				role,
 			},
 			select: {
+				id: true,
 				email: true,
 				role: true,
 				createdAt: true,
@@ -109,6 +110,7 @@ export const loginAdmin = async (adminLoginData: TAdminLoginData) => {
 		}
 
 		const adminData = {
+			id: admin.id,
 			email: admin.email,
 			role: admin.role,
 			createdAt: admin.createdAt,
