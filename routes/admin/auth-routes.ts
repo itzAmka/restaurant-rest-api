@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
 	registerAdminController,
 	loginAdminController,
+	refreshTokenController,
 } from '../../controllers/auth-controller';
 import { isSuperAdminMiddleware } from '../../middlewares/is-super-admin-middleware';
 
@@ -36,8 +37,6 @@ adminAuthRoutes.post('/login', loginAdminController);
  * @description Refresh access token
  * @access Private
  */
-adminAuthRoutes.get('/refresh-token', (req, res) => {
-	res.send('Refresh token');
-});
+adminAuthRoutes.get('/refresh-token', refreshTokenController);
 
 export default adminAuthRoutes;
