@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { isSuperAdminOrAdminMiddleware } from '../../middlewares/is-super-admin-or-admin-middleware';
-import { getAllAdminsController } from '../../controllers/profile-controllers';
+import {
+	getAllAdminsController,
+	getAdminByIdController,
+} from '../../controllers/profile-controllers';
 
 const adminProfileRoutes = Router();
 
@@ -24,9 +27,11 @@ adminProfileRoutes.get(
  * @description Get admin by id
  * @access Private
  */
-adminProfileRoutes.get('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Get admin by id' });
-});
+adminProfileRoutes.get(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	getAdminByIdController,
+);
 
 /**
  * @path /api/v1/admin/profile/:id
