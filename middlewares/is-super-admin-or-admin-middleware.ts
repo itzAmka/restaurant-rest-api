@@ -63,7 +63,7 @@ export const isSuperAdminOrAdminMiddleware = AsyncHandler(
 		if (superAdmin.role !== 'SUPER_ADMIN' && superAdmin.role !== 'ADMIN') {
 			throw new ServerError(
 				403,
-				'Forbidden, only SUPER_ADMIN or ADMIN can access this rout',
+				'Forbidden, only `SUPER_ADMIN` or `ADMIN` can access this route',
 			);
 		}
 
