@@ -65,6 +65,24 @@ export const getCategoriesService = async (
 	};
 };
 
+// Get category by id
+export const getCategoryByIdService = async (id: string) => {
+	const category = await prisma.category.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			menu: true,
+		},
+	});
+
+	if (!category) {
+		throw new ServerError(404, 'Category not found');
+	}
+
+	return category;
+};
+
 // Get category
 export const createCategoryService = async (data: TCategoryData) => {
 	try {
