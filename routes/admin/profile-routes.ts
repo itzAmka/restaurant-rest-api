@@ -1,5 +1,11 @@
 import { Router } from 'express';
 import { isSuperAdminOrAdminMiddleware } from '../../middlewares/is-super-admin-or-admin-middleware';
+import {
+	getAllAdminsController,
+	getAdminByIdController,
+	updateAdminByIdController,
+	deleteAdminByIdController,
+} from '../../controllers/profile-controllers';
 
 const adminProfileRoutes = Router();
 
@@ -11,9 +17,11 @@ const adminProfileRoutes = Router();
  * @description Get all admins
  * @access Private
  */
-adminProfileRoutes.get('/', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Get all admins' });
-});
+adminProfileRoutes.get(
+	'/',
+	isSuperAdminOrAdminMiddleware,
+	getAllAdminsController,
+);
 
 /**
  * @path /api/v1/admin/profile/:id
@@ -21,9 +29,11 @@ adminProfileRoutes.get('/', isSuperAdminOrAdminMiddleware, (req, res) => {
  * @description Get admin by id
  * @access Private
  */
-adminProfileRoutes.get('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Get admin by id' });
-});
+adminProfileRoutes.get(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	getAdminByIdController,
+);
 
 /**
  * @path /api/v1/admin/profile/:id
@@ -31,9 +41,11 @@ adminProfileRoutes.get('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
  * @description Update admin by id
  * @access Private
  */
-adminProfileRoutes.patch('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Update admin by id' });
-});
+adminProfileRoutes.patch(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	updateAdminByIdController,
+);
 
 /**
  * @path /api/v1/admin/profile/:id
@@ -41,8 +53,10 @@ adminProfileRoutes.patch('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
  * @description Delete admin by id
  * @access Private
  */
-adminProfileRoutes.delete('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Delete admin by id' });
-});
+adminProfileRoutes.delete(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	deleteAdminByIdController,
+);
 
 export default adminProfileRoutes;
