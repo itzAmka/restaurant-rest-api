@@ -2,7 +2,11 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import dotevn from 'dotenv';
 
-import { registerAdmin, loginAdmin } from '../services/admin/auth-services';
+import {
+	registerAdmin,
+	loginAdmin,
+	refreshToken as refreshTokenService,
+} from '../services/admin/auth-services';
 import { generateToken } from '../utils/token/generate-token';
 
 dotevn.config();
@@ -52,6 +56,7 @@ export const registerAdminController = asyncHandler(
 	},
 );
 
+// Login admin user
 export const loginAdminController = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { email, password } = req.body;
@@ -88,6 +93,25 @@ export const loginAdminController = asyncHandler(
 			admin,
 			accessToken,
 			refreshToken,
+		});
+	},
+);
+
+// Refresh access token
+export const refreshTokenController = asyncHandler(
+	async (req: Request, res: Response) => {
+		const accessToken = req.headers['x-access-token'] as string;
+		const refreshToken = req.headers['x-refresh-token'] as string;
+
+		if (!accessToken || !refreshToken) {
+			res.status(400);
+			throw new Error('Please provide access token and refresh token');
+		}
+
+		const newAccessToken = await refreshTokenService(accessToken, refreshToken);
+
+		res.json({
+			newAccessToken,
 		});
 	},
 );
