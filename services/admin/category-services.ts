@@ -137,7 +137,7 @@ export const updateCategoryService = async (
 		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
 			throw new ServerError(
 				400,
-				`Category with id: ${id} does not exist or has been deleted`,
+				`Category with id: ${id} does not exist or has been updated`,
 			);
 		}
 
