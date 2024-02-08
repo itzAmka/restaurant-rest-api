@@ -3,7 +3,9 @@ import { Router } from 'express';
 import {
 	registerAdminController,
 	loginAdminController,
+	refreshTokenController,
 } from '../../controllers/auth-controller';
+import { isSuperAdminMiddleware } from '../../middlewares/is-super-admin-middleware';
 
 const adminAuthRoutes = Router();
 
@@ -15,7 +17,11 @@ const adminAuthRoutes = Router();
  * @description Create a new admin, only SUPER_ADMIN can create a new admin
  * @access Private
  */
-adminAuthRoutes.post('/register', registerAdminController);
+adminAuthRoutes.post(
+	'/register',
+	isSuperAdminMiddleware,
+	registerAdminController,
+);
 
 /**
  * @path /api/v1/admin/auth/login
@@ -24,5 +30,13 @@ adminAuthRoutes.post('/register', registerAdminController);
  * @access Private
  */
 adminAuthRoutes.post('/login', loginAdminController);
+
+/**
+ * @path /api/v1/admin/auth/refresh-token
+ * @method GET
+ * @description Refresh access token
+ * @access Private
+ */
+adminAuthRoutes.get('/refresh-token', refreshTokenController);
 
 export default adminAuthRoutes;
