@@ -1,3 +1,5 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 import { prisma } from '../../config/prisma';
 import ServerError from '../../utils/server-error';
 
@@ -54,6 +56,43 @@ export const getAllAdminsServices = async (
 			totalCount,
 		};
 	} catch (err) {
+		throw new ServerError(500, 'Something went wrong, please try again later');
+	}
+};
+
+// Get admin by id
+export const getAdminByIdServices = async (id: string) => {
+	if (!id) throw new ServerError(400, 'Invalid id');
+
+	try {
+		const admin = await prisma.admin.findUnique({
+			where: {
+				id,
+			},
+			select: {
+				id: true,
+				email: true,
+				role: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		});
+
+		if (!admin) {
+			throw new ServerError(404, 'Admin not found');
+		}
+
+		return admin;
+	} catch (err) {
+		console.log(err);
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				'Cannot find admin with the provided id or invalid id',
+			);
+		}
+
 		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
 };
