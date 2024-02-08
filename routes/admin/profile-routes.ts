@@ -4,6 +4,7 @@ import {
 	getAllAdminsController,
 	getAdminByIdController,
 	updateAdminByIdController,
+	deleteAdminByIdController,
 } from '../../controllers/profile-controllers';
 
 const adminProfileRoutes = Router();
@@ -52,8 +53,10 @@ adminProfileRoutes.patch(
  * @description Delete admin by id
  * @access Private
  */
-adminProfileRoutes.delete('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Delete admin by id' });
-});
+adminProfileRoutes.delete(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	deleteAdminByIdController,
+);
 
 export default adminProfileRoutes;
