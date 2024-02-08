@@ -124,6 +124,13 @@ export const updateAdminByIdServices = async (
 			data: {
 				role: data.role ?? existingAdmin?.role,
 			},
+			select: {
+				id: true,
+				email: true,
+				role: true,
+				createdAt: true,
+				updatedAt: true,
+			},
 		});
 
 		return admin;
