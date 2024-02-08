@@ -147,3 +147,34 @@ export const updateAdminByIdServices = async (
 		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
 };
+
+// Delete admin by id
+export const deleteAdminByIdServices = async (id: string) => {
+	if (!id) throw new ServerError(400, 'Invalid id');
+
+	try {
+		const admin = await prisma.admin.delete({
+			where: {
+				id,
+			},
+			select: {
+				id: true,
+				email: true,
+				role: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		});
+
+		return admin;
+	} catch (err) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find admin with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
+	}
+};
