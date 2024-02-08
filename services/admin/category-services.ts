@@ -68,23 +68,34 @@ export const getCategoriesService = async (
 
 // Get category by id
 export const getCategoryByIdService = async (id: string) => {
-	const category = await prisma.category.findUnique({
-		where: {
-			id,
-		},
-		include: {
-			menu: true,
-		},
-	});
+	try {
+		const category = await prisma.category.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				menu: true,
+			},
+		});
 
-	if (!category) {
-		throw new ServerError(404, 'Category not found');
+		if (!category) {
+			throw new ServerError(404, 'Category not found');
+		}
+
+		return category;
+	} catch (err) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Category with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
-
-	return category;
 };
 
-// Get category
+// Create category
 export const createCategoryService = async (data: TCategoryData) => {
 	try {
 		const category = categorySchema.parse(data);
