@@ -8,7 +8,7 @@ export const errorMiddleware = (
 	next: NextFunction,
 ): void => {
 	// get status code from error object
-	const statusCode = err.status === 200 ? 500 : err.status;
+	const statusCode = err.status;
 
 	res.status(statusCode).json({
 		results: null,
