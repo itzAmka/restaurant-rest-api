@@ -144,8 +144,6 @@ export const deleteCategoryService = async (id: string) => {
 
 		return deletedCategory;
 	} catch (err) {
-		console.log(err);
-
 		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
 			throw new ServerError(
 				404,
@@ -160,6 +158,6 @@ export const deleteCategoryService = async (id: string) => {
 			);
 		}
 
-		throw new ServerError(400, `Something went wrong, please try again later`);
+		throw new ServerError(500, `Something went wrong, please try again later`);
 	}
 };
