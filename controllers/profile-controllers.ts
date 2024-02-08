@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 
-import { getAllAdminsServices } from '../services/admin/profile-services';
+import {
+	getAllAdminsServices,
+	getAdminByIdServices,
+} from '../services/admin/profile-services';
 import ServerError from '../utils/server-error';
 
 export const getAllAdminsController = asyncHandler(
@@ -43,5 +46,15 @@ export const getAllAdminsController = asyncHandler(
 				totalCount: results.totalCount,
 			},
 		});
+	},
+);
+
+export const getAdminByIdController = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		const admin = await getAdminByIdServices(id);
+
+		res.json({ admin });
 	},
 );
