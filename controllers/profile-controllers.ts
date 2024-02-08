@@ -5,6 +5,7 @@ import {
 	getAllAdminsServices,
 	getAdminByIdServices,
 	updateAdminByIdServices,
+	deleteAdminByIdServices,
 } from '../services/admin/profile-services';
 import ServerError from '../utils/server-error';
 
@@ -84,5 +85,16 @@ export const updateAdminByIdController = asyncHandler(
 		const admin = await updateAdminByIdServices(id, { role });
 
 		res.json({ admin });
+	},
+);
+
+// Delete admin by id controller
+export const deleteAdminByIdController = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+
+		const deletedAdmin = await deleteAdminByIdServices(id);
+
+		res.json({ deletedAdmin });
 	},
 );
