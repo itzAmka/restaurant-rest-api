@@ -106,3 +106,26 @@ export const createCategoryService = async (data: TCategoryData) => {
 		throw new ServerError(400, 'Invalid data provided');
 	}
 };
+
+// Update category
+export const updateCategoryService = async (
+	id: string,
+	data: TCategoryData,
+) => {
+	try {
+		const updatedCategory = await prisma.category.update({
+			where: {
+				id,
+			},
+			data: {
+				...data,
+			},
+		});
+
+		return updatedCategory;
+	} catch (err: unknown) {
+		console.log(err);
+
+		throw new ServerError(400, 'Invalid data provided');
+	}
+};
