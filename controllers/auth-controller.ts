@@ -8,6 +8,7 @@ import {
 	refreshToken as refreshTokenService,
 } from '../services/admin/auth-services';
 import { generateToken } from '../utils/token/generate-token';
+import ServerError from '../utils/server-error';
 
 dotevn.config();
 
@@ -17,13 +18,12 @@ export const registerAdminController = asyncHandler(
 		const { email, password, role } = req.body;
 
 		if (!email || !password || !role) {
-			res.status(400);
-			throw new Error('Please fill in all fields');
+			throw new ServerError(400, 'Please fill in all fields');
 		}
 
 		if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-			res.status(500);
-			throw new Error(
+			throw new ServerError(
+				500,
 				'Internal server error, failed to load environment variables',
 			);
 		}
@@ -62,13 +62,12 @@ export const loginAdminController = asyncHandler(
 		const { email, password } = req.body;
 
 		if (!email || !password) {
-			res.status(400);
-			throw new Error('Please fill in all fields');
+			throw new ServerError(400, 'Please fill in all fields');
 		}
 
 		if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-			res.status(500);
-			throw new Error(
+			throw new ServerError(
+				500,
 				'Internal server error, failed to load environment variables',
 			);
 		}
@@ -104,8 +103,10 @@ export const refreshTokenController = asyncHandler(
 		const refreshToken = req.headers['x-refresh-token'] as string;
 
 		if (!accessToken || !refreshToken) {
-			res.status(400);
-			throw new Error('Please provide access token and refresh token');
+			throw new ServerError(
+				400,
+				'Please provide access token and refresh token',
+			);
 		}
 
 		const newAccessToken = await refreshTokenService(accessToken, refreshToken);

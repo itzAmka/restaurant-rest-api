@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { addMinutes } from 'date-fns';
 
 import type { TGenerateTokenArgs } from './token-types';
+import ServerError from '../../utils/server-error';
 
 const generateEpochTime = (expiresInMinutes: number): number => {
 	const currentTime = Date.now();
@@ -25,7 +26,7 @@ export const generateToken = ({
 		!SECRET ||
 		!token_type
 	) {
-		throw new Error('Invalid data provided');
+		throw new ServerError(400, 'Invalid data provided');
 	}
 
 	const expiresInMinutes = generateEpochTime(expires_in_minutes);
@@ -41,6 +42,6 @@ export const generateToken = ({
 			expiresIn: '7d',
 		});
 	} catch (error) {
-		throw new Error('Token generation failed');
+		throw new ServerError(400, 'Token generation failed');
 	}
 };

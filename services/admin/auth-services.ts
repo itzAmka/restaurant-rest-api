@@ -21,7 +21,7 @@ const validateAdminRegisterationData = (
 	adminRegisterationData: TAdminRegisterationData,
 ): TAdminRegisterationData => {
 	try {
-		if (!adminRegisterationData) throw new Error('No data provided');
+		if (!adminRegisterationData) throw new ServerError(400, 'No data provided');
 
 		const adminValidatedRegisterationData = adminRegisterDataSchema.parse(
 			adminRegisterationData,
@@ -30,10 +30,13 @@ const validateAdminRegisterationData = (
 		return adminValidatedRegisterationData;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
-			throw new Error(err.errors[0].message ?? 'Invalid data provided');
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
 		}
 
-		throw new Error('Invalid data provided');
+		throw new ServerError(400, 'Invalid data provided');
 	}
 };
 
@@ -52,7 +55,10 @@ export const registerAdmin = async (
 		});
 
 		if (adminExists) {
-			throw new Error(`'${role}' with email '${email}' already exists`);
+			throw new ServerError(
+				400,
+				`'${role}' with email '${email}' already exists`,
+			);
 		}
 
 		const hashedPassword = await hashPassword(password);
@@ -82,17 +88,20 @@ const validateAdminLoginData = (
 	adminLoginData: TAdminLoginData,
 ): TAdminLoginData => {
 	try {
-		if (!adminLoginData) throw new Error('No data provided');
+		if (!adminLoginData) throw new ServerError(400, 'No data provided');
 
 		const adminValidatedLoginData = adminLoginDataSchema.parse(adminLoginData);
 
 		return adminValidatedLoginData;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
-			throw new Error(err.errors[0].message ?? 'Invalid data provided');
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
 		}
 
-		throw new Error('Invalid data provided');
+		throw new ServerError(400, 'Invalid data provided');
 	}
 };
 
@@ -107,13 +116,13 @@ export const loginAdmin = async (adminLoginData: TAdminLoginData) => {
 		});
 
 		if (!admin) {
-			throw new Error('Invalid credentials');
+			throw new ServerError(400, 'Invalid credentials');
 		}
 
 		const isPasswordMatch = await comparePasswords(password, admin.password);
 
 		if (!isPasswordMatch) {
-			throw new Error('Invalid credentials');
+			throw new ServerError(400, 'Invalid credentials');
 		}
 
 		const adminData = {
