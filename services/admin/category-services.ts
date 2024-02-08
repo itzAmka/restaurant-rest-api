@@ -6,6 +6,7 @@ import {
 	categorySchema,
 	type TCategoryData,
 } from '../../utils/schema/admin/category-schema';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export type TPagination = {
 	limit: number;
@@ -127,5 +128,38 @@ export const updateCategoryService = async (
 		console.log(err);
 
 		throw new ServerError(400, 'Invalid data provided');
+	}
+};
+
+// Delete category
+export const deleteCategoryService = async (id: string) => {
+	if (!id) throw new ServerError(400, 'please provide a valid id');
+
+	try {
+		const deletedCategory = await prisma.category.delete({
+			where: {
+				id,
+			},
+		});
+
+		return deletedCategory;
+	} catch (err) {
+		console.log(err);
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Category with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(
+				400,
+				`Category with id: ${id} does not exist or has been deleted`,
+			);
+		}
+
+		throw new ServerError(400, `Something went wrong, please try again later`);
 	}
 };
