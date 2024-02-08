@@ -4,6 +4,7 @@ import asyncHandler from 'express-async-handler';
 import {
 	getAllAdminsServices,
 	getAdminByIdServices,
+	updateAdminByIdServices,
 } from '../services/admin/profile-services';
 import ServerError from '../utils/server-error';
 
@@ -54,6 +55,30 @@ export const getAdminByIdController = asyncHandler(
 		const { id } = req.params;
 
 		const admin = await getAdminByIdServices(id);
+
+		res.json({ admin });
+	},
+);
+
+export const updateAdminByIdController = asyncHandler(
+	async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const { role } = req.body;
+
+		if (
+			role &&
+			role !== 'SUPER_ADMIN' &&
+			role !== 'ADMIN' &&
+			role !== 'MANAGER' &&
+			role !== 'STAFF'
+		) {
+			throw new ServerError(
+				400,
+				`Invalid role: ${role}. Role must be either \`SUPER_ADMIN\`, \`ADMIN\`, \`MANAGER\`, or \`STAFF\``,
+			);
+		}
+
+		const admin = await updateAdminByIdServices(id, { role });
 
 		res.json({ admin });
 	},

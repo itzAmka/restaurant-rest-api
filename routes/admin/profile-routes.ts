@@ -3,6 +3,7 @@ import { isSuperAdminOrAdminMiddleware } from '../../middlewares/is-super-admin-
 import {
 	getAllAdminsController,
 	getAdminByIdController,
+	updateAdminByIdController,
 } from '../../controllers/profile-controllers';
 
 const adminProfileRoutes = Router();
@@ -39,9 +40,11 @@ adminProfileRoutes.get(
  * @description Update admin by id
  * @access Private
  */
-adminProfileRoutes.patch('/:id', isSuperAdminOrAdminMiddleware, (req, res) => {
-	res.json({ message: 'Update admin by id' });
-});
+adminProfileRoutes.patch(
+	'/:id',
+	isSuperAdminOrAdminMiddleware,
+	updateAdminByIdController,
+);
 
 /**
  * @path /api/v1/admin/profile/:id
