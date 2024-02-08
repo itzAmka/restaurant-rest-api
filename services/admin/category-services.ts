@@ -113,6 +113,8 @@ export const updateCategoryService = async (
 	id: string,
 	data: TCategoryData,
 ) => {
+	if (!id) throw new ServerError(400, 'please provide a valid id');
+
 	try {
 		const updatedCategory = await prisma.category.update({
 			where: {
@@ -125,9 +127,21 @@ export const updateCategoryService = async (
 
 		return updatedCategory;
 	} catch (err: unknown) {
-		console.log(err);
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Category with the provided id or invalid id: ${id}`,
+			);
+		}
 
-		throw new ServerError(400, 'Invalid data provided');
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(
+				400,
+				`Category with id: ${id} does not exist or has been deleted`,
+			);
+		}
+
+		throw new ServerError(500, `Something went wrong, please try again later`);
 	}
 };
 
