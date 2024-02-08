@@ -66,7 +66,7 @@ model Order {
   customer Customer @relation(fields: [customerId], references: [id])
 }
 
-model MenuItem {
+model Menu {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String @unique
   description String
@@ -79,14 +79,14 @@ model MenuItem {
 }
 
 model OrderItem {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  orderId    String @db.ObjectId
-  menuItemId String @db.ObjectId
-  quantity   Int
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId  String @db.ObjectId
+  menuId   String @db.ObjectId
+  quantity Int
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  order    Order    @relation(fields: [orderId], references: [id])
-  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
+  menu  Menu  @relation(fields: [menuId], references: [id])
 }
