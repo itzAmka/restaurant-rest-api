@@ -71,11 +71,24 @@ model Menu {
   name        String @unique
   description String
   price       Float
+  categoryId  String @db.ObjectId
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
   OrderItem OrderItem[]
+  Category  Category    @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt @db.Date
+
+  Menu Menu[]
 }
 
 model OrderItem {
