@@ -9,12 +9,9 @@ export const getAllAdminsController = asyncHandler(
 		const { searchTerm } = req.query as { searchTerm: string };
 
 		// pagination
-		const page = parseInt(req.query.page as string) || 1;
-		const limit = parseInt(req.query.limit as string) || 10;
+		const page = parseInt((req.query.page as string) ?? 1);
+		const limit = parseInt((req.query.limit as string) ?? 10);
 		const skip = (page - 1) * limit;
-		const totalPages = Math.ceil(10 / limit);
-		const nextPage = page < totalPages ? page + 1 : null;
-		const prevPage = page > 1 ? page - 1 : null;
 
 		// handle invalid page and limit
 		if (page < 1 || limit < 1) {
@@ -28,12 +25,19 @@ export const getAllAdminsController = asyncHandler(
 
 		const results = await getAllAdminsServices(searchTerm, { limit, skip });
 
+		const totalPages = Math.ceil(results.totalCount / limit);
+		const nextPage = page < totalPages ? page + 1 : null;
+		const prevPage = page > 1 ? page - 1 : null;
+
+		if (page > totalPages)
+			throw new ServerError(400, `Cannot exceed total pages of ${totalPages}`);
+
 		res.json({
 			admins: results.admins,
 			pagination: {
+				limit,
 				page,
 				totalPages,
-				limit,
 				nextPage,
 				prevPage,
 				totalCount: results.totalCount,
