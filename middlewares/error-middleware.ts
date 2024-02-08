@@ -1,13 +1,14 @@
 import type { Request, Response, NextFunction } from 'express';
+import { IServerError } from '../utils/server-error';
 
 export const errorMiddleware = (
-	err: Error,
+	err: IServerError,
 	req: Request,
 	res: Response,
 	next: NextFunction,
 ): void => {
-	// get status code and set to 500 if its 200, else use the status code
-	const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+	// get status code from error object
+	const statusCode = err.status === 200 ? 500 : err.status;
 
 	res.status(statusCode).json({
 		results: null,
