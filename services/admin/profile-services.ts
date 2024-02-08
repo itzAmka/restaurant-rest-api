@@ -84,12 +84,56 @@ export const getAdminByIdServices = async (id: string) => {
 
 		return admin;
 	} catch (err) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find admin with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
+	}
+};
+
+type TUpdateAdminById = {
+	role: 'SUPER_ADMIN' | 'ADMIN' | 'MANAGER' | 'STAFF';
+};
+
+// Update admin by id
+export const updateAdminByIdServices = async (
+	id: string,
+	data: TUpdateAdminById,
+) => {
+	if (!id) throw new ServerError(400, 'Invalid id');
+
+	try {
+		// find admin by id
+		const existingAdmin = await prisma.admin.findUnique({
+			where: {
+				id,
+			},
+			select: {
+				role: true,
+			},
+		});
+
+		const admin = await prisma.admin.update({
+			where: {
+				id,
+			},
+			data: {
+				role: data.role ?? existingAdmin?.role,
+			},
+		});
+
+		return admin;
+	} catch (err) {
 		console.log(err);
 
 		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
 			throw new ServerError(
 				404,
-				'Cannot find admin with the provided id or invalid id',
+				`Cannot find admin with the provided id or invalid id: ${id}`,
 			);
 		}
 
