@@ -8,6 +8,7 @@ import {
 } from '../services/admin/profile-services';
 import ServerError from '../utils/server-error';
 
+// Get all admins controller
 export const getAllAdminsController = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { searchTerm } = req.query as { searchTerm: string };
@@ -50,6 +51,7 @@ export const getAllAdminsController = asyncHandler(
 	},
 );
 
+// Get admin by id controller
 export const getAdminByIdController = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
@@ -60,6 +62,7 @@ export const getAdminByIdController = asyncHandler(
 	},
 );
 
+// Update admin by id controller
 export const updateAdminByIdController = asyncHandler(
 	async (req: Request, res: Response) => {
 		const { id } = req.params;
