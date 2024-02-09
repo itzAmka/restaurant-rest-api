@@ -46,7 +46,7 @@ model Customer {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  Order Order[]
+  order Order[]
 }
 
 model Order {
@@ -61,7 +61,7 @@ model Order {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  OrderItem OrderItem[]
+  orderItem OrderItem[]
 
   customer Customer @relation(fields: [customerId], references: [id])
 }
@@ -76,7 +76,7 @@ model Menu {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  OrderItem OrderItem[]
+  orderItem OrderItem[]
   category  Category    @relation(fields: [categoryId], references: [id])
 }
 
