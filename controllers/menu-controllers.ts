@@ -81,3 +81,20 @@ export const getAllMenuController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Get menu by id controller
+export const getMenuByIdController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const menu = await getMenuByIdService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				menu,
+			},
+		},
+	});
+});
