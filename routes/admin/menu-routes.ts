@@ -1,5 +1,13 @@
 import { Router } from 'express';
 
+import {
+	createMenuController,
+	getAllMenuController,
+	getMenuByIdController,
+	updateMenuController,
+	deleteMenuByIdController,
+} from '../../controllers/menu-controllers';
+
 const adminMenuRoutes = Router();
 
 /* -------- ADMIN MENU ITEMS -------- */
@@ -10,9 +18,7 @@ const adminMenuRoutes = Router();
  * @description Get all menu items
  * @access Private
  */
-adminMenuRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all menu items' });
-});
+adminMenuRoutes.get('/', getAllMenuController);
 
 /**
  * @path /api/v1/admin/menu
@@ -20,9 +26,7 @@ adminMenuRoutes.get('/', (req, res) => {
  * @description Create a new menu item
  * @access Private
  */
-adminMenuRoutes.post('/', (req, res) => {
-	res.json({ message: 'Create a new menu item' });
-});
+adminMenuRoutes.post('/', createMenuController);
 
 /**
  * @path /api/v1/admin/menu/:id
@@ -30,9 +34,7 @@ adminMenuRoutes.post('/', (req, res) => {
  * @description Get menu item by id
  * @access Private
  */
-adminMenuRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get menu item by id' });
-});
+adminMenuRoutes.get('/:id', getMenuByIdController);
 
 /**
  * @path /api/v1/admin/menu/:id
@@ -40,9 +42,7 @@ adminMenuRoutes.get('/:id', (req, res) => {
  * @description Update menu item by id
  * @access Private
  */
-adminMenuRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update menu item by id' });
-});
+adminMenuRoutes.patch('/:id', updateMenuController);
 
 /**
  * @path /api/v1/admin/menu/:id
@@ -50,8 +50,6 @@ adminMenuRoutes.patch('/:id', (req, res) => {
  * @description Delete menu item by id
  * @access Private
  */
-adminMenuRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete menu item by id' });
-});
+adminMenuRoutes.delete('/:id', deleteMenuByIdController);
 
 export default adminMenuRoutes;
