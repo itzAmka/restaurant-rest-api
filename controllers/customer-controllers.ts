@@ -90,3 +90,24 @@ export const getCustomerByIdController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Update customer by id controller
+export const updateCustomerController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+	const { name, phone } = req.body;
+
+	const updatedCustomer = await updateCustomerService(id, {
+		name,
+		phone,
+	});
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				updatedCustomer,
+			},
+		},
+	});
+});
