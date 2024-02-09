@@ -121,3 +121,20 @@ export const updateMenuController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Delete menu by id controller
+export const deleteMenuByIdController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const deletedMenu = await deleteMenuService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				deletedMenu,
+			},
+		},
+	});
+});
