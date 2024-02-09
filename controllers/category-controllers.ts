@@ -99,14 +99,14 @@ export const updateCategoryByIdController = asyncHandler(async (req, res) => {
 	const { id } = req.params;
 	const { name, description } = req.body;
 
-	const category = await updateCategoryService(id, { name, description });
+	const updateCategory = await updateCategoryService(id, { name, description });
 
 	res.status(200).json({
 		success: true,
 		error: null,
 		results: {
 			data: {
-				category,
+				updateCategory,
 			},
 		},
 	});
