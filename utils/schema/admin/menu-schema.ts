@@ -9,10 +9,9 @@ export const menuSchema = z.object({
 		required_error: 'Please provide `description`',
 		invalid_type_error: '`description` must be a string',
 	}),
-	price: z.number({
+	price: z.string({
 		required_error: 'Please provide `price`',
-		invalid_type_error: '`price` must be a number',
-		coerce: true,
+		invalid_type_error: '`price` must be a string',
 	}),
 	categoryId: z.string({
 		required_error: 'Please provide `categoryId`',

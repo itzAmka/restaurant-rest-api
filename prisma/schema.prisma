@@ -70,7 +70,7 @@ model Menu {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String @unique
   description String
-  price       Float
+  price       String
   categoryId  String @db.ObjectId
 
   createdAt DateTime @default(now()) @db.Date
