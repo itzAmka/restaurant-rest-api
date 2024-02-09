@@ -23,8 +23,8 @@ export const customerSchema = z.object({
 		.min(10, 'Phone number must be 10 digits long')
 		.refine(
 			(val) => {
-				// pattern for phone number 555-555-5555
-				const pattern = /^\d{3}-\d{3}-\d{4}$/;
+				// pattern for phone number (555) 555-5555
+				const pattern = /^\(\d{3}\) \d{3}-\d{4}$/;
 
 				if (!pattern.test(val)) {
 					// trim spaces
@@ -38,8 +38,8 @@ export const customerSchema = z.object({
 						return false;
 					}
 
-					// convert to correct format
-					val = val.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+					// convert to correct format: (555) 555-5555
+					val = val.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
 
 					return val;
 				}
@@ -48,12 +48,12 @@ export const customerSchema = z.object({
 			},
 			{
 				message:
-					'Phone number must be in the format `555-555-5555` and 10 digits long',
+					'Phone number must be in the format `(555) 555-5555` and 10 digits long',
 			},
 		)
 		.transform((val) => {
-			// pattern for phone number 555-555-5555
-			const pattern = /^\d{3}-\d{3}-\d{4}$/;
+			// pattern for phone number (555) 555-5555
+			const pattern = /^\(\d{3}\) \d{3}-\d{4}$/;
 
 			if (!pattern.test(val)) {
 				// trim spaces
@@ -67,8 +67,8 @@ export const customerSchema = z.object({
 					return false;
 				}
 
-				// convert to correct format
-				val = val.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+				// convert to correct format: (555) 555-5555
+				val = val.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
 
 				return val;
 			}
