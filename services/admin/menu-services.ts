@@ -51,3 +51,63 @@ export const createMenuService = async (data: TMenu) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Get all menu items
+export const getAllMenuService = async (
+	searchTerm: string = '',
+	pagination: TPagination,
+) => {
+	try {
+		const { limit, skip } = pagination;
+
+		const menu = await prisma.menu.findMany({
+			where: {
+				OR: [
+					{
+						name: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						description: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+				],
+			},
+			take: limit,
+			skip,
+			include: {
+				category: true,
+			},
+		});
+
+		const totalCount = await prisma.menu.count({
+			where: {
+				OR: [
+					{
+						name: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						description: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+				],
+			},
+		});
+
+		return {
+			menu,
+			totalCount,
+		};
+	} catch (err: unknown) {
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
