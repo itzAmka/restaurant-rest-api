@@ -5,7 +5,7 @@
 1. Clone the repository
 
    ```sh
-   git clone "TODO: ADD REPO URL" restaurant-rest-api
+   git clone "https://github.com/itzAmka/restaurant-rest-api.git" restaurant-rest-api
 
    cd restaurant-rest-api
    ```
