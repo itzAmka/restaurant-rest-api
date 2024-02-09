@@ -162,3 +162,77 @@ export const getCustomerByIdService = async (id: string) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Update customer by id
+export const updateCustomerService = async (
+	id: string,
+	data: Omit<TCustomer, 'email'>,
+) => {
+	if (!id) throw new ServerError(400, 'please provide a valid id');
+
+	try {
+		if (data.phone) {
+			customerSchema.omit({ email: true, name: true }).parse(data);
+		}
+
+		if (data.name) {
+			customerSchema.omit({ email: true, phone: true }).parse(data);
+		}
+
+		if (data.name) {
+			// check if customer already exists,
+			// handle case sensitivity
+			// make sure existing customer id is not the same as the provided id for updating current customer
+			const customerExists = await prisma.customer.findFirst({
+				where: {
+					name: {
+						mode: 'insensitive',
+						equals: data.name,
+					},
+					id: {
+						not: id,
+					},
+				},
+			});
+
+			if (customerExists) {
+				throw new ServerError(400, 'Customer `name` already exists');
+			}
+		}
+
+		const updatedCustomer = await prisma.customer.update({
+			where: {
+				id,
+			},
+			data: {
+				...data,
+			},
+		});
+
+		return updatedCustomer;
+	} catch (err: unknown) {
+		if (err instanceof z.ZodError) {
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Customer with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(400, `Customer with id: ${id} does not exist`);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
+	}
+};
