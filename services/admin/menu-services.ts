@@ -207,3 +207,38 @@ export const updateMenuService = async (id: string, data: TMenu) => {
 		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
 };
+
+// Delete menu by id
+export const deleteMenuService = async (id: string) => {
+	if (!id) throw new ServerError(400, 'please provide a valid id');
+
+	try {
+		const deletedMenu = await prisma.menu.delete({
+			where: {
+				id,
+			},
+		});
+
+		return deletedMenu;
+	} catch (err) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Menu with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(
+				400,
+				`Menu with id: ${id} does not exist or has been deleted`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, `Something went wrong, please try again later`);
+	}
+};
