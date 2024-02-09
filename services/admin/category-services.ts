@@ -152,7 +152,11 @@ export const updateCategoryService = async (
 			);
 		}
 
-		throw new ServerError(500, `Something went wrong, please try again later`);
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
 };
 
@@ -181,6 +185,10 @@ export const deleteCategoryService = async (id: string) => {
 				400,
 				`Category with id: ${id} does not exist or has been deleted`,
 			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
 		}
 
 		throw new ServerError(500, `Something went wrong, please try again later`);
