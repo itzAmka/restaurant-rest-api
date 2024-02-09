@@ -1,5 +1,13 @@
 import { Router } from 'express';
 
+import {
+	createCustomerController,
+	getAllCustomersController,
+	getCustomerByIdController,
+	updateCustomerController,
+	deleteCustomerController,
+} from '../../controllers/customer-controllers';
+
 const adminCustomerRoutes = Router();
 
 /* -------- ADMIN CUSTOMERS -------- */
@@ -10,9 +18,15 @@ const adminCustomerRoutes = Router();
  * @description Get all customers
  * @access Private
  */
-adminCustomerRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all customers' });
-});
+adminCustomerRoutes.get('/', getAllCustomersController);
+
+/**
+ * @path /api/v1/admin/customers
+ * @method POST
+ * @description Create customer
+ * @access Private
+ */
+adminCustomerRoutes.post('/', createCustomerController);
 
 /**
  * @path /api/v1/admin/customers/:id
@@ -20,9 +34,7 @@ adminCustomerRoutes.get('/', (req, res) => {
  * @description Get customer by id
  * @access Private
  */
-adminCustomerRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get customer by id' });
-});
+adminCustomerRoutes.get('/:id', getCustomerByIdController);
 
 /**
  * @path /api/v1/admin/customers/:id
@@ -30,9 +42,7 @@ adminCustomerRoutes.get('/:id', (req, res) => {
  * @description Update customer by id
  * @access Private
  */
-adminCustomerRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update customer by id' });
-});
+adminCustomerRoutes.patch('/:id', updateCustomerController);
 
 /**
  * @path /api/v1/admin/customers/:id
@@ -40,8 +50,6 @@ adminCustomerRoutes.patch('/:id', (req, res) => {
  * @description Delete customer by id
  * @access Private
  */
-adminCustomerRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete customer by id' });
-});
+adminCustomerRoutes.delete('/:id', deleteCustomerController);
 
 export default adminCustomerRoutes;
