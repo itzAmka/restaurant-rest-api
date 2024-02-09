@@ -8,7 +8,6 @@ import {
 	updateCategoryService,
 } from '../services/admin/category-services';
 import ServerError from '../utils/server-error';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 // Create category controller
 export const createCategoryController = asyncHandler(
@@ -81,28 +80,17 @@ export const getCategoriesController = asyncHandler(async (req, res) => {
 export const getCategoryByIdController = asyncHandler(async (req, res) => {
 	const { id } = req.params;
 
-	try {
-		const category = await getCategoryByIdService(id);
+	const category = await getCategoryByIdService(id);
 
-		res.status(200).json({
-			success: true,
-			error: null,
-			results: {
-				data: {
-					category,
-				},
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				category,
 			},
-		});
-	} catch (err) {
-		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
-			throw new ServerError(
-				404,
-				`Cannot find admin with the provided id or invalid id: ${id}`,
-			);
-		}
-
-		throw new ServerError(500, 'Something went wrong, please try again later');
-	}
+		},
+	});
 });
 
 // Update category by id controller
