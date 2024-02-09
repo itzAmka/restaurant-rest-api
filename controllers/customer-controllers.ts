@@ -111,3 +111,20 @@ export const updateCustomerController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Delete customer by id controller
+export const deleteCustomerController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const deletedCustomer = await deleteCustomerService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				deletedCustomer,
+			},
+		},
+	});
+});
