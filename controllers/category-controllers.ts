@@ -6,6 +6,7 @@ import {
 	getCategoriesService,
 	getCategoryByIdService,
 	updateCategoryService,
+	deleteCategoryService,
 } from '../services/admin/category-services';
 import ServerError from '../utils/server-error';
 
@@ -106,6 +107,23 @@ export const updateCategoryByIdController = asyncHandler(async (req, res) => {
 		results: {
 			data: {
 				category,
+			},
+		},
+	});
+});
+
+// Delete category by id controller
+export const deleteCategoryByIdController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const deletedCategory = await deleteCategoryService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				deletedCategory,
 			},
 		},
 	});
