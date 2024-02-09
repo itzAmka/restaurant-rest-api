@@ -1,5 +1,13 @@
 import { Router } from 'express';
 
+import {
+	getCategoriesController,
+	createCategoryController,
+	getCategoryByIdController,
+	updateCategoryByIdController,
+	deleteCategoryByIdController,
+} from '../../controllers/category-controllers';
+
 const adminCategoryRoutes = Router();
 
 /* ----------- ADMIN AUTH ----------- */
@@ -10,9 +18,7 @@ const adminCategoryRoutes = Router();
  * @description Get all categories
  * @access Private
  */
-adminCategoryRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all categories' });
-});
+adminCategoryRoutes.get('/', getCategoriesController);
 
 /**
  * @path /api/v1/admin/category/:id
@@ -20,9 +26,7 @@ adminCategoryRoutes.get('/', (req, res) => {
  * @description Get category by id
  * @access Private
  */
-adminCategoryRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get category by id' });
-});
+adminCategoryRoutes.get('/:id', getCategoryByIdController);
 
 /**
  * @path /api/v1/admin/category
@@ -30,9 +34,7 @@ adminCategoryRoutes.get('/:id', (req, res) => {
  * @description Create category
  * @access Private
  */
-adminCategoryRoutes.post('/', (req, res) => {
-	res.json({ message: 'Create category' });
-});
+adminCategoryRoutes.post('/', createCategoryController);
 
 /**
  * @path /api/v1/admin/category/:id
@@ -40,9 +42,7 @@ adminCategoryRoutes.post('/', (req, res) => {
  * @description Update category by id
  * @access Private
  */
-adminCategoryRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update category by id' });
-});
+adminCategoryRoutes.patch('/:id', updateCategoryByIdController);
 
 /**
  * @path /api/v1/admin/category/:id
@@ -50,8 +50,6 @@ adminCategoryRoutes.patch('/:id', (req, res) => {
  * @description Delete category by id
  * @access Private
  */
-adminCategoryRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete category by id' });
-});
+adminCategoryRoutes.delete('/:id', deleteCategoryByIdController);
 
 export default adminCategoryRoutes;

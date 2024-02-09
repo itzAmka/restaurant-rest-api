@@ -100,6 +100,20 @@ export const createCategoryService = async (data: TCategoryData) => {
 	try {
 		const category = categorySchema.parse(data);
 
+		// check if category already exists, and handle case sensitivity
+		const categoryExists = await prisma.category.findFirst({
+			where: {
+				name: {
+					mode: 'insensitive',
+					equals: category.name,
+				},
+			},
+		});
+
+		if (categoryExists) {
+			throw new ServerError(400, 'Category already exists');
+		}
+
 		const newCategory = await prisma.category.create({
 			data: {
 				...category,
@@ -115,6 +129,10 @@ export const createCategoryService = async (data: TCategoryData) => {
 			);
 		}
 
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
 		throw new ServerError(400, 'Invalid data provided');
 	}
 };
@@ -127,6 +145,25 @@ export const updateCategoryService = async (
 	if (!id) throw new ServerError(400, 'please provide a valid id');
 
 	try {
+		// check if category already exists,
+		// handle case sensitivity
+		// make sure existing category id is not the same as the provided id for updating current category
+		const categoryExists = await prisma.category.findFirst({
+			where: {
+				name: {
+					mode: 'insensitive',
+					equals: data.name,
+				},
+				id: {
+					not: id,
+				},
+			},
+		});
+
+		if (categoryExists) {
+			throw new ServerError(400, 'Category already exists');
+		}
+
 		const updatedCategory = await prisma.category.update({
 			where: {
 				id,
@@ -152,7 +189,11 @@ export const updateCategoryService = async (
 			);
 		}
 
-		throw new ServerError(500, `Something went wrong, please try again later`);
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
 };
 
@@ -181,6 +222,10 @@ export const deleteCategoryService = async (id: string) => {
 				400,
 				`Category with id: ${id} does not exist or has been deleted`,
 			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
 		}
 
 		throw new ServerError(500, `Something went wrong, please try again later`);
