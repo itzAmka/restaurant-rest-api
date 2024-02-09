@@ -70,14 +70,14 @@ model Menu {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String @unique
   description String
-  price       Float
+  price       String
   categoryId  String @db.ObjectId
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
   OrderItem OrderItem[]
-  Category  Category    @relation(fields: [categoryId], references: [id])
+  category  Category    @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
