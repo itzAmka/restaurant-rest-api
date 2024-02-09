@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { prisma } from '../../config/prisma';
 import ServerError from '../../utils/server-error';
@@ -108,6 +109,39 @@ export const getAllMenuService = async (
 			totalCount,
 		};
 	} catch (err: unknown) {
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Get menu by id
+export const getMenuByIdService = async (id: string) => {
+	try {
+		const menu = await prisma.menu.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				category: true,
+			},
+		});
+
+		if (!menu) {
+			throw new ServerError(404, 'Menu not found');
+		}
+
+		return menu;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Menu with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
