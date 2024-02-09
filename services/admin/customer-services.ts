@@ -7,6 +7,11 @@ import {
 	type TCustomer,
 } from '../../utils/schema/admin/customer-schema';
 
+export type TPagination = {
+	limit: number;
+	skip: number;
+};
+
 // Create customer
 export const createCustomerService = async (data: TCustomer) => {
 	try {
@@ -46,6 +51,78 @@ export const createCustomerService = async (data: TCustomer) => {
 			throw new ServerError(err.status, err.message);
 		}
 
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Get all customers
+export const getAllCustomersService = async (
+	searchTerm: string = '',
+	pagination: TPagination,
+) => {
+	try {
+		const { limit, skip } = pagination;
+
+		const customers = await prisma.customer.findMany({
+			where: {
+				OR: [
+					{
+						name: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						email: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						phone: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+				],
+			},
+			take: limit,
+			skip,
+			include: {
+				// order: true
+			},
+		});
+
+		const totalCount = await prisma.customer.count({
+			where: {
+				OR: [
+					{
+						name: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						email: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+					{
+						phone: {
+							contains: searchTerm,
+							mode: 'insensitive',
+						},
+					},
+				],
+			},
+		});
+
+		return {
+			customers,
+			totalCount,
+		};
+	} catch (err: unknown) {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
