@@ -170,13 +170,18 @@ export const updateCustomerService = async (
 ) => {
 	if (!id) throw new ServerError(400, 'please provide a valid id');
 
+	let phone: string | undefined;
+	let name: string | undefined;
+
 	try {
 		if (data.phone) {
-			customerSchema.omit({ email: true, name: true }).parse(data);
+			phone = customerSchema
+				.omit({ email: true, name: true })
+				.parse(data).phone;
 		}
 
 		if (data.name) {
-			customerSchema.omit({ email: true, phone: true }).parse(data);
+			name = customerSchema.omit({ email: true, phone: true }).parse(data).name;
 		}
 
 		if (data.name) {
@@ -205,7 +210,8 @@ export const updateCustomerService = async (
 				id,
 			},
 			data: {
-				...data,
+				phone,
+				name,
 			},
 		});
 
