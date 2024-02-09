@@ -100,6 +100,20 @@ export const createCategoryService = async (data: TCategoryData) => {
 	try {
 		const category = categorySchema.parse(data);
 
+		// check if category already exists, and handle case sensitivity
+		const categoryExists = await prisma.category.findFirst({
+			where: {
+				name: {
+					mode: 'insensitive',
+					equals: category.name,
+				},
+			},
+		});
+
+		if (categoryExists) {
+			throw new ServerError(400, 'Category already exists');
+		}
+
 		const newCategory = await prisma.category.create({
 			data: {
 				...category,
@@ -113,6 +127,10 @@ export const createCategoryService = async (data: TCategoryData) => {
 				400,
 				err.errors[0].message ?? 'Invalid data provided',
 			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
 		}
 
 		throw new ServerError(400, 'Invalid data provided');
