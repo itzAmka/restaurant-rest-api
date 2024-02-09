@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import ServerError from '../../../utils/server-error';
+
 export const customerSchema = z.object({
 	name: z
 		.string({
@@ -64,7 +66,7 @@ export const customerSchema = z.object({
 
 				// make sure it's 10 digits
 				if (val.length !== 10) {
-					return false;
+					throw new ServerError(400, 'Phone number must be 10 digits long');
 				}
 
 				// convert to correct format: (555) 555-5555
