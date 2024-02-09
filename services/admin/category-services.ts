@@ -145,23 +145,25 @@ export const updateCategoryService = async (
 	if (!id) throw new ServerError(400, 'please provide a valid id');
 
 	try {
-		// check if category already exists,
-		// handle case sensitivity
-		// make sure existing category id is not the same as the provided id for updating current category
-		const categoryExists = await prisma.category.findFirst({
-			where: {
-				name: {
-					mode: 'insensitive',
-					equals: data.name,
+		if (data.name) {
+			// check if category already exists,
+			// handle case sensitivity
+			// make sure existing category id is not the same as the provided id for updating current category
+			const categoryExists = await prisma.category.findFirst({
+				where: {
+					name: {
+						mode: 'insensitive',
+						equals: data.name,
+					},
+					id: {
+						not: id,
+					},
 				},
-				id: {
-					not: id,
-				},
-			},
-		});
+			});
 
-		if (categoryExists) {
-			throw new ServerError(400, 'Category already exists');
+			if (categoryExists) {
+				throw new ServerError(400, 'Category `name` already exists');
+			}
 		}
 
 		const updatedCategory = await prisma.category.update({
