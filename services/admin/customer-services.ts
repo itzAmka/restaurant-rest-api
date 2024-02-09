@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { prisma } from '../../config/prisma';
 import ServerError from '../../utils/server-error';
@@ -89,7 +90,7 @@ export const getAllCustomersService = async (
 			take: limit,
 			skip,
 			include: {
-				// order: true
+				order: true,
 			},
 		});
 
@@ -123,6 +124,41 @@ export const getAllCustomersService = async (
 			totalCount,
 		};
 	} catch (err: unknown) {
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Get customer by id
+export const getCustomerByIdService = async (id: string) => {
+	if (!id) throw new ServerError(400, 'please provide a valid id');
+
+	try {
+		const customer = await prisma.customer.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				order: true,
+			},
+		});
+
+		if (!customer) {
+			throw new ServerError(404, 'Customer not found');
+		}
+
+		return customer;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Customer with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
