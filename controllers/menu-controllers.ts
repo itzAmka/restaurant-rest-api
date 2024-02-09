@@ -98,3 +98,26 @@ export const getMenuByIdController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Update menu by id controller
+export const updateMenuController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+	const { name, price, description, categoryId } = req.body;
+
+	const updatedMenu = await updateMenuService(id, {
+		name,
+		price,
+		description,
+		categoryId,
+	});
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				updatedMenu,
+			},
+		},
+	});
+});
