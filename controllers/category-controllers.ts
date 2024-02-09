@@ -5,6 +5,7 @@ import {
 	createCategoryService,
 	getCategoriesService,
 	getCategoryByIdService,
+	updateCategoryService,
 } from '../services/admin/category-services';
 import ServerError from '../utils/server-error';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -79,6 +80,7 @@ export const getCategoriesController = asyncHandler(async (req, res) => {
 // Get category by id controller
 export const getCategoryByIdController = asyncHandler(async (req, res) => {
 	const { id } = req.params;
+
 	try {
 		const category = await getCategoryByIdService(id);
 
@@ -101,4 +103,22 @@ export const getCategoryByIdController = asyncHandler(async (req, res) => {
 
 		throw new ServerError(500, 'Something went wrong, please try again later');
 	}
+});
+
+// Update category by id controller
+export const updateCategoryByIdController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+	const { name, description } = req.body;
+
+	const category = await updateCategoryService(id, { name, description });
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				category,
+			},
+		},
+	});
 });
