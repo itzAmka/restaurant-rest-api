@@ -73,3 +73,20 @@ export const getAllCustomersController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Get customer by id controller
+export const getCustomerByIdController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const customer = await getCustomerByIdService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				customer,
+			},
+		},
+	});
+});
