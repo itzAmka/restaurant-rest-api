@@ -11,6 +11,7 @@ import storeOrdersRoutes from './routes/admin/store-orders-routes';
 import adminMenuRoutes from './routes/admin/menu-routes';
 import adminCustomerRoutes from './routes/admin/customer-routes';
 import adminCategoryRoutes from './routes/admin/category-routes';
+import onlineOrdersRoutes from './routes/online-orders-routes';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use('/api/v1/admin/store-orders', storeOrdersRoutes);
 app.use('/api/v1/admin/menu', adminMenuRoutes);
 app.use('/api/v1/admin/customers', adminCustomerRoutes);
 app.use('/api/v1/admin/category', adminCategoryRoutes);
+
+// public routes
+app.use('/api/v1/online-orders', onlineOrdersRoutes);
 
 /* -------- handle 404 errors ------- */
 app.use('*', (req, res) => {
