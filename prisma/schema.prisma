@@ -47,10 +47,53 @@ model Customer {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  order Order[]
+  onlineOrder OnlineOrder[]
 }
 
-model Order {
+model Menu {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String @unique
+  description String
+  price       String
+  categoryId  String @db.ObjectId
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt @db.Date
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  storeOrders StoreOrders[]
+  onlineOrder OnlineOrder[]
+}
+
+model Category {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt @db.Date
+
+  menu Menu[]
+}
+
+model StoreOrders {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  customerId    String        @db.ObjectId
+  menuId        String        @db.ObjectId
+  total         Float
+  quantity      Int
+  orderDate     DateTime      @default(now()) @db.Date
+  paymentStatus PaymentStatus
+  orderStatus   OrderStatus   @default(PROCESSING)
+
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt @db.Date
+
+  menu Menu @relation(fields: [menuId], references: [id])
+}
+
+model OnlineOrder {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   customerId    String        @db.ObjectId
   menuId        String        @db.ObjectId
@@ -65,30 +108,4 @@ model Order {
 
   menu     Menu     @relation(fields: [menuId], references: [id])
   customer Customer @relation(fields: [customerId], references: [id])
-}
-
-model Menu {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  name        String @unique
-  description String
-  price       String
-  categoryId  String @db.ObjectId
-
-  createdAt DateTime @default(now()) @db.Date
-  updatedAt DateTime @updatedAt @db.Date
-
-  order Order[]
-
-  category Category @relation(fields: [categoryId], references: [id])
-}
-
-model Category {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  name        String @unique
-  description String
-
-  createdAt DateTime @default(now()) @db.Date
-  updatedAt DateTime @updatedAt @db.Date
-
-  menu Menu[]
 }
