@@ -47,7 +47,7 @@ model Customer {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  onlineOrder OnlineOrder[]
+  onlineOrders OnlineOrders[]
 }
 
 model Menu {
@@ -62,8 +62,8 @@ model Menu {
 
   category Category @relation(fields: [categoryId], references: [id])
 
-  storeOrders StoreOrders[]
-  onlineOrder OnlineOrder[]
+  storeOrders  StoreOrders[]
+  onlineOrders OnlineOrders[]
 }
 
 model Category {
@@ -93,7 +93,7 @@ model StoreOrders {
   menu Menu @relation(fields: [menuId], references: [id])
 }
 
-model OnlineOrder {
+model OnlineOrders {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   customerId    String        @db.ObjectId
   menuId        String        @db.ObjectId
