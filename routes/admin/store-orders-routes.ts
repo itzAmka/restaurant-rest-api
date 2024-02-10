@@ -5,7 +5,7 @@ const storeOrdersRoutes = Router();
 /* ---------- ADMIN ORDERS ---------- */
 
 /**
- * @path /api/v1/admin/orders
+ * @path /api/v1/admin/store-orders
  * @method GET
  * @description Get all orders
  * @access Private
@@ -15,7 +15,7 @@ storeOrdersRoutes.get('/', (req, res) => {
 });
 
 /**
- * @path /api/v1/admin/orders
+ * @path /api/v1/admin/store-orders
  * @method POST
  * @description Create a new order
  * @access Private
@@ -25,7 +25,7 @@ storeOrdersRoutes.post('/', (req, res) => {
 });
 
 /**
- * @path /api/v1/admin/orders/:id
+ * @path /api/v1/admin/store-orders/:id
  * @method GET
  * @description Get order by id
  * @access Private
@@ -35,7 +35,7 @@ storeOrdersRoutes.get('/:id', (req, res) => {
 });
 
 /**
- * @path /api/v1/admin/orders/:id
+ * @path /api/v1/admin/store-orders/:id
  * @method PATCH
  * @description Update order by id
  * @access Private
@@ -45,7 +45,7 @@ storeOrdersRoutes.patch('/:id', (req, res) => {
 });
 
 /**
- * @path /api/v1/admin/orders/:id
+ * @path /api/v1/admin/store-orders/:id
  * @method DELETE
  * @description Delete order by id
  * @access Private
