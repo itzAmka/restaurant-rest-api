@@ -17,6 +17,7 @@ enum OrderStatus {
   PROCESSING
   COMPLETED
   CANCELLED
+  READY_FOR_PICKUP
   PICKED_UP
 }
 
@@ -52,17 +53,17 @@ model Customer {
 model Order {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   customerId    String        @db.ObjectId
-  PickupTime    String
+  menuId        String        @db.ObjectId
   total         Float
+  quantity      Int
   orderDate     DateTime      @default(now()) @db.Date
   paymentStatus PaymentStatus
-  orderStatus   OrderStatus
+  orderStatus   OrderStatus   @default(PROCESSING)
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  orderItem OrderItem[]
-
+  menu     Menu     @relation(fields: [menuId], references: [id])
   customer Customer @relation(fields: [customerId], references: [id])
 }
 
@@ -76,8 +77,9 @@ model Menu {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  orderItem OrderItem[]
-  category  Category    @relation(fields: [categoryId], references: [id])
+  order Order[]
+
+  category Category @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
@@ -89,17 +91,4 @@ model Category {
   updatedAt DateTime @updatedAt @db.Date
 
   menu Menu[]
-}
-
-model OrderItem {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  orderId  String @db.ObjectId
-  menuId   String @db.ObjectId
-  quantity Int
-
-  createdAt DateTime @default(now()) @db.Date
-  updatedAt DateTime @updatedAt @db.Date
-
-  order Order @relation(fields: [orderId], references: [id])
-  menu  Menu  @relation(fields: [menuId], references: [id])
 }
