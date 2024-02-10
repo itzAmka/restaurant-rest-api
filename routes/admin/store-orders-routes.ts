@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-const adminOrderRoutes = Router();
+const storeOrdersRoutes = Router();
 
 /* ---------- ADMIN ORDERS ---------- */
 
@@ -10,8 +10,8 @@ const adminOrderRoutes = Router();
  * @description Get all orders
  * @access Private
  */
-adminOrderRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all orders' });
+storeOrdersRoutes.get('/', (req, res) => {
+	res.json({ message: 'Get all store orders' });
 });
 
 /**
@@ -20,8 +20,8 @@ adminOrderRoutes.get('/', (req, res) => {
  * @description Create a new order
  * @access Private
  */
-adminOrderRoutes.post('/', (req, res) => {
-	res.json({ message: 'Create a new order' });
+storeOrdersRoutes.post('/', (req, res) => {
+	res.json({ message: 'Create a new store order' });
 });
 
 /**
@@ -30,8 +30,8 @@ adminOrderRoutes.post('/', (req, res) => {
  * @description Get order by id
  * @access Private
  */
-adminOrderRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get order by id' });
+storeOrdersRoutes.get('/:id', (req, res) => {
+	res.json({ message: 'Get store order by id' });
 });
 
 /**
@@ -40,8 +40,8 @@ adminOrderRoutes.get('/:id', (req, res) => {
  * @description Update order by id
  * @access Private
  */
-adminOrderRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update order by id' });
+storeOrdersRoutes.patch('/:id', (req, res) => {
+	res.json({ message: 'Update store order by id' });
 });
 
 /**
@@ -50,8 +50,8 @@ adminOrderRoutes.patch('/:id', (req, res) => {
  * @description Delete order by id
  * @access Private
  */
-adminOrderRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete order by id' });
+storeOrdersRoutes.delete('/:id', (req, res) => {
+	res.json({ message: 'Delete store order by id' });
 });
 
-export default adminOrderRoutes;
+export default storeOrdersRoutes;
