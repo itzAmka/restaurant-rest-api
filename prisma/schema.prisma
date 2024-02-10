@@ -17,6 +17,7 @@ enum OrderStatus {
   PROCESSING
   COMPLETED
   CANCELLED
+  READY_FOR_PICKUP
   PICKED_UP
 }
 
@@ -53,12 +54,11 @@ model Order {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   customerId    String        @db.ObjectId
   menuId        String        @db.ObjectId
-  pickupTime    String
   total         Float
   quantity      Int
   orderDate     DateTime      @default(now()) @db.Date
   paymentStatus PaymentStatus
-  orderStatus   OrderStatus
+  orderStatus   OrderStatus   @default(PROCESSING)
 
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
