@@ -90,7 +90,7 @@ export const getAllCustomersService = async (
 			take: limit,
 			skip,
 			include: {
-				order: true,
+				onlineOrders: true,
 			},
 		});
 
@@ -138,7 +138,7 @@ export const getCustomerByIdService = async (id: string) => {
 				id,
 			},
 			include: {
-				order: true,
+				onlineOrders: true,
 			},
 		});
 
