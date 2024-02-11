@@ -1,8 +1,25 @@
 import { Router } from 'express';
 
+import { rateLimiter } from '../config/rate-limiter';
+import {
+	createOnlineOrderController,
+	getAllOnlineOrdersController,
+	getOnlineOrderController,
+	updateOnlineOrderController,
+	deleteOnlineOrderController,
+} from '../controllers/online-orders-controllers';
+
 const onlineOrdersRoutes = Router();
 
-/* ---------- ADMIN ORDERS ---------- */
+/* ---------- ONLINE ORDERS ---------- */
+
+/**
+ * @path /api/v1/online-orders
+ * @method POST
+ * @description Create a new order
+ * @access Public
+ */
+onlineOrdersRoutes.post('/', rateLimiter, createOnlineOrderController);
 
 /**
  * @path /api/v1/online-orders
@@ -10,19 +27,7 @@ const onlineOrdersRoutes = Router();
  * @description Get all orders
  * @access Private
  */
-onlineOrdersRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all online orders' });
-});
-
-/**
- * @path /api/v1/online-orders
- * @method POST
- * @description Create a new order
- * @access Private
- */
-onlineOrdersRoutes.post('/', (req, res) => {
-	res.json({ message: 'Create a new online order' });
-});
+onlineOrdersRoutes.get('/', getAllOnlineOrdersController);
 
 /**
  * @path /api/v1/online-orders/:id
@@ -30,9 +35,7 @@ onlineOrdersRoutes.post('/', (req, res) => {
  * @description Get order by id
  * @access Private
  */
-onlineOrdersRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get online order by id' });
-});
+onlineOrdersRoutes.get('/:id', getOnlineOrderController);
 
 /**
  * @path /api/v1/online-orders/:id
@@ -40,9 +43,15 @@ onlineOrdersRoutes.get('/:id', (req, res) => {
  * @description Update order by id
  * @access Private
  */
-onlineOrdersRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update online order by id' });
-});
+onlineOrdersRoutes.patch('/:id', updateOnlineOrderController);
+
+/**
+ * @path /api/v1/online-orders/:id/status
+ * @method PATCH
+ * @description Update order status by id
+ * @access Private
+ */
+onlineOrdersRoutes.patch('/:id/status', updateOnlineOrderController);
 
 /**
  * @path /api/v1/online-orders/:id
@@ -50,8 +59,6 @@ onlineOrdersRoutes.patch('/:id', (req, res) => {
  * @description Delete order by id
  * @access Private
  */
-onlineOrdersRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete online order by id' });
-});
+onlineOrdersRoutes.delete('/:id', deleteOnlineOrderController);
 
 export default onlineOrdersRoutes;
