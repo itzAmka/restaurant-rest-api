@@ -7,6 +7,11 @@ import {
 	type TOnlineOrdersSchema,
 } from '../utils/schema/online-orders-schema';
 
+export type TPagination = {
+	limit: number;
+	skip: number;
+};
+
 // Create a new online order service
 export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 	try {
@@ -61,8 +66,6 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 
 		return newOnlineOrder;
 	} catch (err: unknown) {
-		console.log(err);
-
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
 				400,
@@ -73,6 +76,33 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 		if (err instanceof ServerError) {
 			throw new ServerError(err.status, err.message);
 		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Get all online orders service
+export const getAllOnlineOrdersService = async (pagination: TPagination) => {
+	try {
+		const { limit, skip } = pagination;
+
+		const onlineOrders = await prisma.onlineOrders.findMany({
+			take: limit,
+			skip,
+			include: {
+				customer: true,
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		const totalCount = await prisma.onlineOrders.count();
+
+		return {
+			onlineOrders,
+			totalCount,
+		};
+	} catch (err: unknown) {
+		console.log(err);
 
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
