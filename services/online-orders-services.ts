@@ -102,8 +102,6 @@ export const getAllOnlineOrdersService = async (pagination: TPagination) => {
 			totalCount,
 		};
 	} catch (err: unknown) {
-		console.log(err);
-
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
