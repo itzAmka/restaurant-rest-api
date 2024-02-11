@@ -161,3 +161,111 @@ export const getOnlineOrderService = async (id: string) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Update online order by id service
+export const updateOnlineOrderService = async (
+	id: string,
+	data: Pick<TOnlineOrdersSchema, 'orderItems'>,
+) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	let orderItems: TOnlineOrdersSchema['orderItems'] = [];
+
+	try {
+		if (data.orderItems) {
+			orderItems = onlineOrdersSchema
+				.omit({ customerId: true })
+				.parse(data).orderItems;
+		}
+
+		// if there are duplicate menuIds, combine them into one and sum the quantity
+		orderItems = orderItems.reduce(
+			(acc, item) => {
+				const existingItem = acc.find((i) => i.menuId === item.menuId);
+
+				if (existingItem) {
+					existingItem.quantity += item.quantity;
+					return acc;
+				}
+
+				return [...acc, item];
+			},
+			[] as TOnlineOrdersSchema['orderItems'],
+		);
+
+		// calculate total price and total items
+		const menuIds = orderItems.map((item) => item.menuId);
+
+		const menus = await prisma.menu.findMany({
+			where: {
+				id: {
+					in: menuIds,
+				},
+			},
+		});
+
+		if (menus.length === 0) {
+			throw new ServerError(404, 'Menu not found');
+		}
+
+		const totalPrice = menus.reduce((acc, menu) => {
+			const orderItem = orderItems.find((item) => item.menuId === menu.id);
+
+			if (!orderItem || !orderItem.quantity) {
+				throw new ServerError(400, 'Please provide `quantity`');
+			}
+
+			// remove all non-numeric characters from price accept the dot("$10.00" => 10.00)
+			const price = Number(menu.price.replace(/[^\d.]/g, ''));
+			const quantity = orderItem.quantity;
+
+			return acc + price * quantity;
+		}, 0);
+
+		const totalItems = orderItems.reduce((acc, item) => acc + item.quantity, 0);
+
+		// update order
+		const updatedOnlineOrder = await prisma.onlineOrders.update({
+			where: {
+				id,
+			},
+			data: {
+				menuIds: orderItems.map((item) => item.menuId),
+				totalPrice: Number(totalPrice.toFixed(2)),
+				totalItems,
+			},
+			include: {
+				customer: true,
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		return { message: 'Order updated successfully', updatedOnlineOrder };
+	} catch (err: unknown) {
+		if (err instanceof z.ZodError) {
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
