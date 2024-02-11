@@ -79,3 +79,20 @@ export const getAllOnlineOrdersController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Get online order by id controller
+export const getOnlineOrderController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const onlineOrder = await getOnlineOrderService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				onlineOrder,
+			},
+		},
+	});
+});
