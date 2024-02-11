@@ -172,3 +172,42 @@ export const getStoreOrderService = async (id: string) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Get store order by order number service
+export const getStoreOrderByOrderNumberService = async (
+	orderNumber: number,
+) => {
+	if (!orderNumber) {
+		throw new ServerError(400, 'Please provide `orderNumber`');
+	}
+
+	try {
+		const storeOrder = await prisma.storeOrders.findFirst({
+			where: {
+				orderNumber,
+			},
+			include: {
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		if (!storeOrder) {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		return storeOrder;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided \`orderNumber\` or invalid \`orderNumber\`: ${orderNumber}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
