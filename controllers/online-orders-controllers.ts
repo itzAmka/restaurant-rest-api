@@ -154,3 +154,20 @@ export const updateOnlineOrderStatusController = asyncHandler(
 		});
 	},
 );
+
+// Delete online order by id controller
+export const deleteOnlineOrderController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const deletedOnlineOrder = await deleteOnlineOrderService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				deletedOnlineOrder,
+			},
+		},
+	});
+});
