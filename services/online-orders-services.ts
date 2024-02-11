@@ -16,7 +16,24 @@ export type TPagination = {
 // Create a new online order service
 export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 	try {
-		const { customerId, orderItems } = onlineOrdersSchema.parse(data);
+		const { customerId } = onlineOrdersSchema.parse(data);
+
+		let orderItems = data.orderItems;
+
+		// if there are duplicate menuIds, combine them into one and sum the quantity
+		orderItems = orderItems.reduce(
+			(acc, item) => {
+				const existingItem = acc.find((i) => i.menuId === item.menuId);
+
+				if (existingItem) {
+					existingItem.quantity += item.quantity;
+					return acc;
+				}
+
+				return [...acc, item];
+			},
+			[] as TOnlineOrdersSchema['orderItems'],
+		);
 
 		const menuIds = orderItems.map((item) => item.menuId);
 
@@ -54,7 +71,7 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 		const newOnlineOrder = await prisma.onlineOrders.create({
 			data: {
 				customerId,
-				totalPrice,
+				totalPrice: Number(totalPrice.toFixed(2)),
 				totalItems,
 				paymentStatus: 'UNPAID',
 				orderStatus: 'PROCESSING',
