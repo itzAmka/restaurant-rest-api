@@ -96,3 +96,34 @@ export const getOnlineOrderController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Update online order by id controller
+export const updateOnlineOrderController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+	const { orderItems } = req.body;
+
+	if (!orderItems) {
+		throw new ServerError(400, 'Please provide `orderItems`');
+	}
+
+	if (orderItems.length === 0) {
+		throw new ServerError(
+			400,
+			'`orderItems` must be an array with at least one item',
+		);
+	}
+
+	const updatedOnlineOrder = await updateOnlineOrderService(id, {
+		orderItems,
+	});
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				updatedOnlineOrder,
+			},
+		},
+	});
+});
