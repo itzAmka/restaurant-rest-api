@@ -13,6 +13,16 @@ export type TPagination = {
 	skip: number;
 };
 
+export type TUpdateOnlineOrderStatus = {
+	orderStatus:
+		| 'PROCESSING'
+		| 'COMPLETED'
+		| 'CANCELLED'
+		| 'READY_FOR_PICKUP'
+		| 'PICKED_UP';
+	paymentStatus: 'PAID' | 'UNPAID' | 'REFUNDED';
+};
+
 // Create a new online order service
 export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 	try {
@@ -243,6 +253,78 @@ export const updateOnlineOrderService = async (
 		});
 
 		return { message: 'Order updated successfully', updatedOnlineOrder };
+	} catch (err: unknown) {
+		if (err instanceof z.ZodError) {
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Update online order status by id service
+export const updateOnlineOrderStatusService = async (
+	id: string,
+	status: TUpdateOnlineOrderStatus,
+) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	const { orderStatus, paymentStatus } = status;
+
+	if (
+		orderStatus !== 'PROCESSING' &&
+		orderStatus !== 'COMPLETED' &&
+		orderStatus !== 'CANCELLED' &&
+		orderStatus !== 'READY_FOR_PICKUP' &&
+		orderStatus !== 'PICKED_UP'
+	) {
+		throw new ServerError(400, 'Invalid `orderStatus`');
+	}
+
+	if (
+		paymentStatus !== 'PAID' &&
+		paymentStatus !== 'UNPAID' &&
+		paymentStatus !== 'REFUNDED'
+	) {
+		throw new ServerError(400, 'Invalid `paymentStatus`');
+	}
+
+	try {
+		const updatedOnlineOrder = await prisma.onlineOrders.update({
+			where: {
+				id,
+			},
+			data: {
+				orderStatus,
+				paymentStatus,
+			},
+			include: {
+				customer: true,
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		return updatedOnlineOrder;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
