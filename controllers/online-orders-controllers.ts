@@ -127,3 +127,30 @@ export const updateOnlineOrderController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Update online order status by id service
+export const updateOnlineOrderStatusController = asyncHandler(
+	async (req, res) => {
+		const { id } = req.params;
+		const { status } = req.body;
+
+		if (!status) {
+			throw new ServerError(400, 'Please provide `status`');
+		}
+
+		const updatedOnlineOrderStatus = await updateOnlineOrderStatusService(
+			id,
+			status,
+		);
+
+		res.status(200).json({
+			success: true,
+			error: null,
+			results: {
+				data: {
+					updatedOnlineOrderStatus,
+				},
+			},
+		});
+	},
+);
