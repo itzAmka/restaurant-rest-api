@@ -135,3 +135,40 @@ export const getAllStoreOrdersService = async (pagination: TPagination) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Get store order by id service
+export const getStoreOrderService = async (id: string) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	try {
+		const storeOrder = await prisma.storeOrders.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		if (!storeOrder) {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		return storeOrder;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
