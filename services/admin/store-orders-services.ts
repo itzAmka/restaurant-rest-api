@@ -111,3 +111,27 @@ export const createStoreOrderService = async (data: TStoreOrdersSchema) => {
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Get all store orders service
+export const getAllStoreOrdersService = async (pagination: TPagination) => {
+	try {
+		const { limit, skip } = pagination;
+
+		const storeOrders = await prisma.storeOrders.findMany({
+			take: limit,
+			skip,
+			include: {
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		const totalCount = await prisma.storeOrders.count();
+
+		return {
+			storeOrders,
+			totalCount,
+		};
+	} catch (err: unknown) {
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
