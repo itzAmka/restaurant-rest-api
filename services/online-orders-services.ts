@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { prisma } from '../config/prisma';
 import ServerError from '../utils/server-error';
@@ -102,6 +103,44 @@ export const getAllOnlineOrdersService = async (pagination: TPagination) => {
 			totalCount,
 		};
 	} catch (err: unknown) {
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Get online order by id service
+export const getOnlineOrderService = async (id: string) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	try {
+		const onlineOrder = await prisma.onlineOrders.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				customer: true,
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		if (!onlineOrder) {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		return onlineOrder;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
