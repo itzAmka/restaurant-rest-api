@@ -128,7 +128,7 @@ export const getMenuByIdService = async (id: string) => {
 		});
 
 		if (!menu) {
-			throw new ServerError(404, 'Menu not found');
+			throw new ServerError(404, `Menu with id: ${id} does not exist`);
 		}
 
 		return menu;

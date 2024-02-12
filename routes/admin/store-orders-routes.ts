@@ -1,18 +1,18 @@
 import { Router } from 'express';
 
+import {
+	createStoreOrderController,
+	getAllStoreOrdersController,
+	getStoreOrderController,
+	getStoreOrderByOrderNumberController,
+	updateStoreOrderStatusController,
+	deleteStoreOrderController,
+} from '../../controllers/store-orders-controllers';
+import { rateLimiter } from '../../config/rate-limiter';
+
 const storeOrdersRoutes = Router();
 
 /* ---------- ADMIN ORDERS ---------- */
-
-/**
- * @path /api/v1/admin/store-orders
- * @method GET
- * @description Get all orders
- * @access Private
- */
-storeOrdersRoutes.get('/', (req, res) => {
-	res.json({ message: 'Get all store orders' });
-});
 
 /**
  * @path /api/v1/admin/store-orders
@@ -20,9 +20,15 @@ storeOrdersRoutes.get('/', (req, res) => {
  * @description Create a new order
  * @access Private
  */
-storeOrdersRoutes.post('/', (req, res) => {
-	res.json({ message: 'Create a new store order' });
-});
+storeOrdersRoutes.post('/', rateLimiter, createStoreOrderController);
+
+/**
+ * @path /api/v1/admin/store-orders
+ * @method GET
+ * @description Get all orders
+ * @access Private
+ */
+storeOrdersRoutes.get('/', getAllStoreOrdersController);
 
 /**
  * @path /api/v1/admin/store-orders/:id
@@ -30,19 +36,26 @@ storeOrdersRoutes.post('/', (req, res) => {
  * @description Get order by id
  * @access Private
  */
-storeOrdersRoutes.get('/:id', (req, res) => {
-	res.json({ message: 'Get store order by id' });
-});
+storeOrdersRoutes.get('/:id', getStoreOrderController);
 
 /**
- * @path /api/v1/admin/store-orders/:id
- * @method PATCH
- * @description Update order by id
+ * @path /api/v1/admin/store-orders/order-number/:orderNumber
+ * @method GET
+ * @description Get order by order number
  * @access Private
  */
-storeOrdersRoutes.patch('/:id', (req, res) => {
-	res.json({ message: 'Update store order by id' });
-});
+storeOrdersRoutes.get(
+	'/order-number/:orderNumber',
+	getStoreOrderByOrderNumberController,
+);
+
+/**
+ * @path /api/v1/admin/store-orders/:id/status
+ * @method PATCH
+ * @description Update order status by id
+ * @access Private
+ */
+storeOrdersRoutes.patch('/:id/status', updateStoreOrderStatusController);
 
 /**
  * @path /api/v1/admin/store-orders/:id
@@ -50,8 +63,6 @@ storeOrdersRoutes.patch('/:id', (req, res) => {
  * @description Delete order by id
  * @access Private
  */
-storeOrdersRoutes.delete('/:id', (req, res) => {
-	res.json({ message: 'Delete store order by id' });
-});
+storeOrdersRoutes.delete('/:id', deleteStoreOrderController);
 
 export default storeOrdersRoutes;
