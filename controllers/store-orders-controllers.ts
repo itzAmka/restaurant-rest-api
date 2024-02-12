@@ -75,3 +75,20 @@ export const getAllStoreOrdersController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Get store order by id controller
+export const getStoreOrderController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const storeOrder = await getStoreOrderService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				storeOrder,
+			},
+		},
+	});
+});
