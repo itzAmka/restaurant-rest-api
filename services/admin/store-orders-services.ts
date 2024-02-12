@@ -59,6 +59,15 @@ export const createStoreOrderService = async (data: TStoreOrdersSchema) => {
 			throw new ServerError(404, 'Menu not found');
 		}
 
+		// check if all menuIds exist
+		if (menus.length !== menuIds.length) {
+			const notFoundMenuIds = menuIds.filter(
+				(id) => !menus.map((menu) => menu.id).includes(id),
+			);
+
+			throw new ServerError(404, `Menu Id: ${notFoundMenuIds} does not exist`);
+		}
+
 		const totalPrice = menus.reduce((acc, menu) => {
 			const orderItem = orderItems.find((item) => item.menuId === menu.id);
 
@@ -289,7 +298,7 @@ export const updateStoreOrderService = async (
 			},
 		});
 
-		return { message: 'Order updated successfully', updatedStoreOrder };
+		return updatedStoreOrder;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
