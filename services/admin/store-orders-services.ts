@@ -1,19 +1,19 @@
 import { z } from 'zod';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
-import { prisma } from '../config/prisma';
-import ServerError from '../utils/server-error';
+import { prisma } from '../../config/prisma';
+import ServerError from '../../utils/server-error';
 import {
-	onlineOrdersSchema,
-	type TOnlineOrdersSchema,
-} from '../utils/schema/online-orders-schema';
+	storeOrdersSchema,
+	type TStoreOrdersSchema,
+} from '../../utils/schema/admin/store-orders-schema';
 
 export type TPagination = {
 	limit: number;
 	skip: number;
 };
 
-export type TUpdateOnlineOrderStatus = {
+export type TUpdateStoreOrderStatus = {
 	orderStatus:
 		| 'PROCESSING'
 		| 'COMPLETED'
@@ -23,12 +23,12 @@ export type TUpdateOnlineOrderStatus = {
 	paymentStatus: 'PAID' | 'UNPAID' | 'REFUNDED';
 };
 
-// Create a new online order service
-export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
+// Create a new store order service
+export const createStoreOrderService = async (data: TStoreOrdersSchema) => {
 	try {
-		const { customerId } = onlineOrdersSchema.parse(data);
+		const parsedData = storeOrdersSchema.parse(data);
 
-		let orderItems = data.orderItems;
+		let orderItems = parsedData.orderItems;
 
 		// if there are duplicate menuIds, combine them into one and sum the quantity
 		orderItems = orderItems.reduce(
@@ -42,7 +42,7 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 
 				return [...acc, item];
 			},
-			[] as TOnlineOrdersSchema['orderItems'],
+			[] as TStoreOrdersSchema['orderItems'],
 		);
 
 		const menuIds = orderItems.map((item) => item.menuId);
@@ -86,10 +86,13 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 
 		// TODO: charge logic here
 
+		// generate order number: 8-digit random number
+		const orderNumber = Math.floor(10000000 + Math.random() * 90000000);
+
 		// create new order
-		const newOnlineOrder = await prisma.onlineOrders.create({
+		const newStoreOrder = await prisma.storeOrders.create({
 			data: {
-				customerId,
+				orderNumber,
 				totalPrice: Number(totalPrice.toFixed(2)),
 				totalItems,
 				paymentStatus: 'UNPAID',
@@ -97,11 +100,11 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 				menuIds,
 			},
 			include: {
-				customer: true,
+				// menu: true, TODO: include menu later when needed
 			},
 		});
 
-		return newOnlineOrder;
+		return newStoreOrder;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
@@ -118,24 +121,23 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 	}
 };
 
-// Get all online orders service
-export const getAllOnlineOrdersService = async (pagination: TPagination) => {
+// Get all store orders service
+export const getAllStoreOrdersService = async (pagination: TPagination) => {
 	try {
 		const { limit, skip } = pagination;
 
-		const onlineOrders = await prisma.onlineOrders.findMany({
+		const storeOrders = await prisma.storeOrders.findMany({
 			take: limit,
 			skip,
 			include: {
-				customer: true,
 				// menu: true, TODO: include menu later when needed
 			},
 		});
 
-		const totalCount = await prisma.onlineOrders.count();
+		const totalCount = await prisma.storeOrders.count();
 
 		return {
-			onlineOrders,
+			storeOrders,
 			totalCount,
 		};
 	} catch (err: unknown) {
@@ -143,28 +145,27 @@ export const getAllOnlineOrdersService = async (pagination: TPagination) => {
 	}
 };
 
-// Get online order by id service
-export const getOnlineOrderService = async (id: string) => {
+// Get store order by id service
+export const getStoreOrderService = async (id: string) => {
 	if (!id) {
 		throw new ServerError(400, 'Please provide `id`');
 	}
 
 	try {
-		const onlineOrder = await prisma.onlineOrders.findUnique({
+		const storeOrder = await prisma.storeOrders.findUnique({
 			where: {
 				id,
 			},
 			include: {
-				customer: true,
 				// menu: true, TODO: include menu later when needed
 			},
 		});
 
-		if (!onlineOrder) {
+		if (!storeOrder) {
 			throw new ServerError(404, 'Order not found');
 		}
 
-		return onlineOrder;
+		return storeOrder;
 	} catch (err: unknown) {
 		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
 			throw new ServerError(
@@ -181,22 +182,59 @@ export const getOnlineOrderService = async (id: string) => {
 	}
 };
 
-// Update online order by id service
-export const updateOnlineOrderService = async (
+// Get store order by order number service
+export const getStoreOrderByOrderNumberService = async (
+	orderNumber: number,
+) => {
+	if (!orderNumber) {
+		throw new ServerError(400, 'Please provide `orderNumber`');
+	}
+
+	try {
+		const storeOrder = await prisma.storeOrders.findFirst({
+			where: {
+				orderNumber,
+			},
+			include: {
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		if (!storeOrder) {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		return storeOrder;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided \`orderNumber\` or invalid \`orderNumber\`: ${orderNumber}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
+
+// Update store order by id service
+export const updateStoreOrderService = async (
 	id: string,
-	data: Pick<TOnlineOrdersSchema, 'orderItems'>,
+	data: TStoreOrdersSchema,
 ) => {
 	if (!id) {
 		throw new ServerError(400, 'Please provide `id`');
 	}
 
-	let orderItems: TOnlineOrdersSchema['orderItems'] = [];
+	let orderItems: TStoreOrdersSchema['orderItems'] = [];
 
 	try {
 		if (data.orderItems) {
-			orderItems = onlineOrdersSchema
-				.omit({ customerId: true })
-				.parse(data).orderItems;
+			orderItems = storeOrdersSchema.parse(data).orderItems;
 		}
 
 		// if there are duplicate menuIds, combine them into one and sum the quantity
@@ -211,7 +249,7 @@ export const updateOnlineOrderService = async (
 
 				return [...acc, item];
 			},
-			[] as TOnlineOrdersSchema['orderItems'],
+			[] as TStoreOrdersSchema['orderItems'],
 		);
 
 		// calculate total price and total items
@@ -246,7 +284,7 @@ export const updateOnlineOrderService = async (
 		const totalItems = orderItems.reduce((acc, item) => acc + item.quantity, 0);
 
 		// update order
-		const updatedOnlineOrder = await prisma.onlineOrders.update({
+		const updatedStoreOrder = await prisma.storeOrders.update({
 			where: {
 				id,
 			},
@@ -256,12 +294,11 @@ export const updateOnlineOrderService = async (
 				totalItems,
 			},
 			include: {
-				customer: true,
 				// menu: true, TODO: include menu later when needed
 			},
 		});
 
-		return { message: 'Order updated successfully', updatedOnlineOrder };
+		return updatedStoreOrder;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
@@ -289,10 +326,10 @@ export const updateOnlineOrderService = async (
 	}
 };
 
-// Update online order status by id service
-export const updateOnlineOrderStatusService = async (
+// Update store order status by id service
+export const updateStoreOrderStatusService = async (
 	id: string,
-	status: TUpdateOnlineOrderStatus,
+	status: TUpdateStoreOrderStatus,
 ) => {
 	if (!id) {
 		throw new ServerError(400, 'Please provide `id`');
@@ -319,7 +356,7 @@ export const updateOnlineOrderStatusService = async (
 	}
 
 	try {
-		const updatedOnlineOrder = await prisma.onlineOrders.update({
+		const updatedStoreOrder = await prisma.storeOrders.update({
 			where: {
 				id,
 			},
@@ -328,12 +365,11 @@ export const updateOnlineOrderStatusService = async (
 				paymentStatus,
 			},
 			include: {
-				customer: true,
 				// menu: true, TODO: include menu later when needed
 			},
 		});
 
-		return updatedOnlineOrder;
+		return updatedStoreOrder;
 	} catch (err: unknown) {
 		if (err instanceof z.ZodError) {
 			throw new ServerError(
@@ -361,20 +397,20 @@ export const updateOnlineOrderStatusService = async (
 	}
 };
 
-// Delete online order by id service
-export const deleteOnlineOrderService = async (id: string) => {
+// Delete store order by id service
+export const deleteStoreOrderService = async (id: string) => {
 	if (!id) {
 		throw new ServerError(400, 'Please provide `id`');
 	}
 
 	try {
-		const deletedOnlineOrder = await prisma.onlineOrders.delete({
+		const deletedStoreOrder = await prisma.storeOrders.delete({
 			where: {
 				id,
 			},
 		});
 
-		return deletedOnlineOrder;
+		return deletedStoreOrder;
 	} catch (err: unknown) {
 		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
 			throw new ServerError(

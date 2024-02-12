@@ -79,10 +79,10 @@ model Category {
 
 model StoreOrders {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  customerId    String        @db.ObjectId
-  menuId        String        @db.ObjectId
-  total         Float
-  quantity      Int
+  orderNumber   Int           @unique
+  menuIds       String[]      @db.ObjectId
+  totalPrice    Float
+  totalItems    Int
   orderDate     DateTime      @default(now()) @db.Date
   paymentStatus PaymentStatus
   orderStatus   OrderStatus   @default(PROCESSING)
@@ -90,7 +90,7 @@ model StoreOrders {
   createdAt DateTime @default(now()) @db.Date
   updatedAt DateTime @updatedAt @db.Date
 
-  menu Menu @relation(fields: [menuId], references: [id])
+  menu Menu @relation(fields: [menuIds], references: [id])
 }
 
 model OnlineOrders {

@@ -6,6 +6,7 @@ import {
 	getAllOnlineOrdersController,
 	getOnlineOrderController,
 	updateOnlineOrderController,
+	updateOnlineOrderStatusController,
 	deleteOnlineOrderController,
 } from '../controllers/online-orders-controllers';
 
@@ -51,7 +52,7 @@ onlineOrdersRoutes.patch('/:id', updateOnlineOrderController);
  * @description Update order status by id
  * @access Private
  */
-onlineOrdersRoutes.patch('/:id/status', updateOnlineOrderController);
+onlineOrdersRoutes.patch('/:id/status', updateOnlineOrderStatusController);
 
 /**
  * @path /api/v1/online-orders/:id
