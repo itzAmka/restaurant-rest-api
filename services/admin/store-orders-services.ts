@@ -419,6 +419,13 @@ export const deleteStoreOrderService = async (id: string) => {
 			);
 		}
 
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
 		if (err instanceof ServerError) {
 			throw new ServerError(err.status, err.message);
 		}
