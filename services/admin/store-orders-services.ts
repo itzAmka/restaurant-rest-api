@@ -325,3 +325,74 @@ export const updateStoreOrderService = async (
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Update store order status by id service
+export const updateStoreOrderStatusService = async (
+	id: string,
+	status: TUpdateStoreOrderStatus,
+) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	const { orderStatus, paymentStatus } = status;
+
+	if (
+		orderStatus !== 'PROCESSING' &&
+		orderStatus !== 'COMPLETED' &&
+		orderStatus !== 'CANCELLED' &&
+		orderStatus !== 'READY_FOR_PICKUP' &&
+		orderStatus !== 'PICKED_UP'
+	) {
+		throw new ServerError(400, 'Invalid `orderStatus`');
+	}
+
+	if (
+		paymentStatus !== 'PAID' &&
+		paymentStatus !== 'UNPAID' &&
+		paymentStatus !== 'REFUNDED'
+	) {
+		throw new ServerError(400, 'Invalid `paymentStatus`');
+	}
+
+	try {
+		const updatedStoreOrder = await prisma.storeOrders.update({
+			where: {
+				id,
+			},
+			data: {
+				orderStatus,
+				paymentStatus,
+			},
+			include: {
+				// menu: true, TODO: include menu later when needed
+			},
+		});
+
+		return updatedStoreOrder;
+	} catch (err: unknown) {
+		if (err instanceof z.ZodError) {
+			throw new ServerError(
+				400,
+				err.errors[0].message ?? 'Invalid data provided',
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+			throw new ServerError(404, 'Order not found');
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
