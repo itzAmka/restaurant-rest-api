@@ -117,3 +117,20 @@ export const getStoreOrderByOrderNumberController = asyncHandler(
 		});
 	},
 );
+
+// Delete store order controller
+export const deleteStoreOrderController = asyncHandler(async (req, res) => {
+	const { id } = req.params;
+
+	const deletedStoreOrder = await deleteStoreOrderService(id);
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				deletedStoreOrder,
+			},
+		},
+	});
+});
