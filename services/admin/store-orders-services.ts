@@ -396,3 +396,33 @@ export const updateStoreOrderStatusService = async (
 		throw new ServerError(500, 'Something went wrong, please try again');
 	}
 };
+
+// Delete store order by id service
+export const deleteStoreOrderService = async (id: string) => {
+	if (!id) {
+		throw new ServerError(400, 'Please provide `id`');
+	}
+
+	try {
+		const deletedStoreOrder = await prisma.storeOrders.delete({
+			where: {
+				id,
+			},
+		});
+
+		return deletedStoreOrder;
+	} catch (err: unknown) {
+		if (err instanceof PrismaClientKnownRequestError && err.code === 'P2023') {
+			throw new ServerError(
+				404,
+				`Cannot find Order with the provided id or invalid id: ${id}`,
+			);
+		}
+
+		if (err instanceof ServerError) {
+			throw new ServerError(err.status, err.message);
+		}
+
+		throw new ServerError(500, 'Something went wrong, please try again');
+	}
+};
