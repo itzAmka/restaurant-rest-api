@@ -1,5 +1,9 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
+
+/* -------- options -------- */
+import { corsOptions } from './config/cors-options';
 
 /* ------- middlewares imports ------ */
 import { errorMiddleware } from './middlewares/error-middleware';
@@ -25,6 +29,7 @@ const app: Express = express();
 /* -------- middlewares setup -------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
 
 /* ----------- routes setup ---------- */
 app.get('/', (req, res) => {
