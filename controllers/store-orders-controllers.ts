@@ -5,7 +5,6 @@ import {
 	getAllStoreOrdersService,
 	getStoreOrderService,
 	getStoreOrderByOrderNumberService,
-	updateStoreOrderService,
 	updateStoreOrderStatusService,
 	deleteStoreOrderService,
 } from '../services/admin/store-orders-services';
@@ -112,6 +111,33 @@ export const getStoreOrderByOrderNumberController = asyncHandler(
 			results: {
 				data: {
 					storeOrder,
+				},
+			},
+		});
+	},
+);
+
+// Update store order status controller
+export const updateStoreOrderStatusController = asyncHandler(
+	async (req, res) => {
+		const { id } = req.params;
+		const { status } = req.body;
+
+		if (!status) {
+			throw new ServerError(400, 'Please provide `status`');
+		}
+
+		const updatedStoreOrderStatus = await updateStoreOrderStatusService(
+			id,
+			status,
+		);
+
+		res.status(200).json({
+			success: true,
+			error: null,
+			results: {
+				data: {
+					updatedStoreOrderStatus,
 				},
 			},
 		});
