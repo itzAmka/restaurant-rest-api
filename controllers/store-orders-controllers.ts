@@ -92,3 +92,28 @@ export const getStoreOrderController = asyncHandler(async (req, res) => {
 		},
 	});
 });
+
+// Get store order by order number controller
+export const getStoreOrderByOrderNumberController = asyncHandler(
+	async (req, res) => {
+		const { orderNumber } = req.params;
+
+		if (!orderNumber) {
+			throw new ServerError(400, 'Please provide `id` and `orderNumber`');
+		}
+
+		const storeOrder = await getStoreOrderByOrderNumberService(
+			Number(orderNumber),
+		);
+
+		res.status(200).json({
+			success: true,
+			error: null,
+			results: {
+				data: {
+					storeOrder,
+				},
+			},
+		});
+	},
+);
