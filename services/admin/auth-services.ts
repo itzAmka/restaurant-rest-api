@@ -2,6 +2,7 @@ import { z } from 'zod';
 import dotenv from 'dotenv';
 
 import { prisma } from '../../config/prisma';
+import { redis } from '../../config/redis';
 import {
 	adminRegisterDataSchema,
 	adminLoginDataSchema,
@@ -175,50 +176,109 @@ export const refreshToken = async (
 		throw new ServerError(401, 'Unauthorized, token id mismatch');
 	}
 
+	// if token id's are similar, perform the following steps:
+
+	// 1. check if `Id` is cached in redis
+	const idInCache = await redis.get(`tokenId:${decodedRefreshToken.token_id}`);
+
+	if (!idInCache) {
+		// 2. if `Id` is not cached, check in the database
+		const adminExists = await prisma.admin.findUnique({
+			where: {
+				id: decodedRefreshToken.token_id,
+			},
+		});
+
+		// 3. if `Id` is not in the database, throw error
+		if (!adminExists) {
+			throw new ServerError(401, 'Unauthorized, Cannot use this token');
+		}
+
+		// set token `Id` in the cache
+		await redis.set(
+			`tokenId:${adminExists.id}`,
+			JSON.stringify(adminExists.id),
+		);
+		await redis.expire(`tokenId:${adminExists.id}`, 60 * 60 /* 1 hour */);
+	}
+
 	// get token status
 	const accessTokenStatus = getTokenStatus(decodedAccessToken);
 	const refreshTokenStatus = getTokenStatus(decodedRefreshToken);
 
-	console.log({ accessTokenStatus, refreshTokenStatus });
+	/* --------------- one of the tokens or both are invalid -------------- */
 
-	// cannot refresh token if both tokens are invalid
+	// scenario 1: both tokens are invalid
+	// scenario 2: refresh token is invalid
+	// scenario 3: access token is invalid
+
+	// scenarios 1, 2, and 3 combined
+	if (
+		(accessTokenStatus.message === 'invalid_token' &&
+			refreshTokenStatus.message === 'invalid_token') ||
+		refreshTokenStatus.message === 'invalid_token' ||
+		accessTokenStatus.message === 'invalid_token'
+	) {
+		return {
+			tokensStatus: {
+				accessTokenStatus: accessTokenStatus.message,
+				refreshTokenStatus: refreshTokenStatus.message,
+			},
+			tokensState: {
+				accessTokenUsable: false,
+				refreshTokenUsable: false,
+			},
+			message: 'Cannot refresh token, invalid tokens',
+			newAccessToken: null,
+			tokenRefreshed: false,
+		};
+	}
+
+	/* ---- refresh token is expried ---- */
+
+	// scenario 4: refresh token is expired
+	if (refreshTokenStatus.message === 'expired_token') {
+		return {
+			tokensStatus: {
+				accessTokenStatus: accessTokenStatus.message,
+				refreshTokenStatus: refreshTokenStatus.message,
+			},
+			tokensState: {
+				accessTokenUsable: false,
+				refreshTokenUsable: false,
+			},
+			message: 'Cannot refresh token, refresh token is expired',
+			newAccessToken: null,
+			tokenRefreshed: false,
+		};
+	}
+
+	/* ----- both tokens are valid ---- */
+
+	// scenario 5: Both tokens are valid
 	if (
 		accessTokenStatus.message === 'valid_token' &&
 		refreshTokenStatus.message === 'valid_token'
 	) {
-		throw new ServerError(
-			401,
-			'Unauthorized, tokens are valid, no need to refresh',
-		);
+		return {
+			tokensStatus: {
+				accessTokenStatus: accessTokenStatus.message,
+				refreshTokenStatus: refreshTokenStatus.message,
+			},
+			tokensState: {
+				accessTokenUsable: true,
+				refreshTokenUsable: true,
+			},
+			message: 'No need to refresh token, both tokens are valid',
+			newAccessToken: null,
+			tokenRefreshed: false,
+		};
 	}
 
-	if (accessTokenStatus.message === 'valid_token') {
-		throw new ServerError(
-			401,
-			'Unauthorized, access token is valid, no need to refresh',
-		);
-	}
-
-	// invalid tokens
-	if (
-		accessTokenStatus.message === 'invalid_token' ||
-		refreshTokenStatus.message === 'invalid_token'
-	) {
-		throw new ServerError(401, 'Unauthorized, invalid tokens');
-	}
-
-	// expired tokens
+	// scenario 6: refresh token is valid and access token is expired
 	if (
 		accessTokenStatus.message === 'expired_token' &&
-		refreshTokenStatus.message === 'expired_token'
-	) {
-		throw new ServerError(401, 'Unauthorized, both tokens are expired');
-	}
-
-	// refresh token is valid and access token is expired, generate new access token
-	if (
-		refreshTokenStatus.message === 'valid_token' &&
-		accessTokenStatus.message === 'expired_token'
+		refreshTokenStatus.message === 'valid_token'
 	) {
 		const newAccessToken = generateToken({
 			token_id: decodedRefreshToken.token_id,
@@ -227,8 +287,18 @@ export const refreshToken = async (
 			SECRET: process.env.ACCESS_TOKEN_SECRET,
 		});
 
-		return newAccessToken;
+		return {
+			tokensStatus: {
+				accessTokenStatus: accessTokenStatus.message,
+				refreshTokenStatus: refreshTokenStatus.message,
+			},
+			tokensState: {
+				accessTokenUsable: false,
+				refreshTokenUsable: true,
+			},
+			message: 'Access token is expired, generated new access token',
+			newAccessToken,
+			tokenRefreshed: true,
+		};
 	}
-
-	throw new ServerError(401, 'Unauthorized, invalid tokens');
 };
