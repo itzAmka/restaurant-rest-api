@@ -74,6 +74,7 @@ export const loginAdminController = asyncHandler(
 
 		const admin = await loginAdmin({ email, password });
 
+		// token expires in 20 minutes
 		const accessToken = generateToken({
 			token_id: admin.id,
 			expires_in_minutes: 20,
@@ -81,9 +82,10 @@ export const loginAdminController = asyncHandler(
 			token_type: 'ACCESS_TOKEN',
 		});
 
+		// token expires in 7 days
 		const refreshToken = generateToken({
 			token_id: admin.id,
-			expires_in_minutes: 60,
+			expires_in_minutes: 60 * 24 * 7,
 			SECRET: process.env.REFRESH_TOKEN_SECRET,
 			token_type: 'REFRESH_TOKEN',
 		});
