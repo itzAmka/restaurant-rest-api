@@ -109,10 +109,14 @@ export const refreshTokenController = asyncHandler(
 			);
 		}
 
-		const newAccessToken = await refreshTokenService(accessToken, refreshToken);
+		const results = await refreshTokenService(accessToken, refreshToken);
 
 		res.json({
-			newAccessToken,
+			success: true,
+			error: null,
+			results: {
+				data: results,
+			},
 		});
 	},
 );
