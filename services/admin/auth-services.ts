@@ -2,6 +2,7 @@ import { z } from 'zod';
 import dotenv from 'dotenv';
 
 import { prisma } from '../../config/prisma';
+import { redis } from '../../config/redis';
 import {
 	adminRegisterDataSchema,
 	adminLoginDataSchema,
@@ -174,6 +175,33 @@ export const refreshToken = async (
 	if (decodedAccessToken.token_id !== decodedRefreshToken.token_id) {
 		throw new ServerError(401, 'Unauthorized, token id mismatch');
 	}
+
+	// if token id's are similar, perform the following steps:
+
+	// 1. check if `Id` is cached in redis
+	const idInCache = await redis.get(`tokenId:${decodedRefreshToken.token_id}`);
+
+	if (!idInCache) {
+		// 2. if `Id` is not cached, check in the database
+		const adminExists = await prisma.admin.findUnique({
+			where: {
+				id: decodedRefreshToken.token_id,
+			},
+		});
+
+		// 3. if `Id` is not in the database, throw error
+		if (!adminExists) {
+			throw new ServerError(401, 'Unauthorized, Cannot use this token');
+		}
+
+		// set token `Id` in the cache
+		await redis.set(
+			`tokenId:${adminExists.id}`,
+			JSON.stringify(adminExists.id),
+		);
+		await redis.expire(`tokenId:${adminExists.id}`, 60 * 60 /* 1 hour */);
+	}
+
 	// get token status
 	const accessTokenStatus = getTokenStatus(decodedAccessToken);
 	const refreshTokenStatus = getTokenStatus(decodedRefreshToken);
@@ -197,8 +225,8 @@ export const refreshToken = async (
 				refreshTokenStatus: refreshTokenStatus.message,
 			},
 			tokensState: {
-				accessTokenUsable: accessTokenStatus.message === 'valid_token',
-				refreshTokenUsable: refreshTokenStatus.message === 'valid_token',
+				accessTokenUsable: false,
+				refreshTokenUsable: false,
 			},
 			message: 'Cannot refresh token, invalid tokens',
 			newAccessToken: null,
