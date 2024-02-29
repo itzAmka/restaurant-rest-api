@@ -79,9 +79,15 @@ export const loginAdminController = asyncHandler(
 		});
 
 		res.json({
-			admin,
-			accessToken,
-			refreshToken,
+			success: true,
+			error: null,
+			results: {
+				admin,
+				tokens: {
+					accessToken,
+					refreshToken,
+				},
+			},
 		});
 	},
 );
