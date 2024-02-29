@@ -34,24 +34,12 @@ export const registerAdminController = asyncHandler(
 			role: role.toUpperCase(),
 		});
 
-		const accessToken = generateToken({
-			token_id: newAdmin.id,
-			expires_in_minutes: 20,
-			SECRET: process.env.ACCESS_TOKEN_SECRET,
-			token_type: 'ACCESS_TOKEN',
-		});
-
-		const refreshToken = generateToken({
-			token_id: newAdmin.id,
-			expires_in_minutes: 60,
-			SECRET: process.env.REFRESH_TOKEN_SECRET,
-			token_type: 'REFRESH_TOKEN',
-		});
-
 		res.json({
-			newAdmin,
-			accessToken,
-			refreshToken,
+			success: true,
+			error: null,
+			restuls: {
+				newAdmin,
+			},
 		});
 	},
 );
