@@ -4,6 +4,7 @@ import {
 	getCategoriesController,
 	createCategoryController,
 	getCategoryByIdController,
+	getAllCategoriesIdsController,
 	updateCategoryByIdController,
 	deleteCategoryByIdController,
 } from '../../controllers/category-controllers';
@@ -27,6 +28,14 @@ adminCategoryRoutes.get('/', getCategoriesController);
  * @access Private
  */
 adminCategoryRoutes.get('/:id', getCategoryByIdController);
+
+/**
+ * @path /api/v1/admin/categories/all/ids
+ * @method GET
+ * @description Get all categories ids
+ * @access Private
+ */
+adminCategoryRoutes.get('/all/ids', getAllCategoriesIdsController);
 
 /**
  * @path /api/v1/admin/categories

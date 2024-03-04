@@ -95,6 +95,21 @@ export const getCategoryByIdService = async (id: string) => {
 	}
 };
 
+// Get all categories ids
+export const getAllCategoriesIdsService = async () => {
+	const categories = await prisma.category.findMany({
+		select: {
+			id: true,
+			name: true,
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
+	});
+
+	return categories;
+};
+
 // Create category
 export const createCategoryService = async (data: TCategoryData) => {
 	try {
