@@ -5,6 +5,7 @@ import {
 	createCategoryService,
 	getCategoriesService,
 	getCategoryByIdService,
+	getAllCategoriesIdsService,
 	updateCategoryService,
 	deleteCategoryService,
 } from '../services/admin/category-services';
@@ -89,6 +90,20 @@ export const getCategoryByIdController = asyncHandler(async (req, res) => {
 		results: {
 			data: {
 				category,
+			},
+		},
+	});
+});
+
+export const getAllCategoriesIdsController = asyncHandler(async (req, res) => {
+	const categoriesIds = await getAllCategoriesIdsService();
+
+	res.status(200).json({
+		success: true,
+		error: null,
+		results: {
+			data: {
+				categoriesIds,
 			},
 		},
 	});
