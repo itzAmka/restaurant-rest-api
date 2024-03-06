@@ -83,6 +83,10 @@ export const updateAdminByIdController = asyncHandler(
 		const { id } = req.params;
 		const { role } = req.body;
 
+		if (!role) {
+			throw new ServerError(400, 'Role is required to update admin role');
+		}
+
 		if (
 			role &&
 			role !== 'SUPER_ADMIN' &&
