@@ -39,6 +39,12 @@ export const getCategoriesService = async (
 		},
 		take: limit,
 		skip,
+		include: {
+			menu: true,
+		},
+		orderBy: {
+			createdAt: 'desc',
+		},
 	});
 
 	const totalCount = await prisma.category.count({
