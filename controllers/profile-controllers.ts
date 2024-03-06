@@ -39,14 +39,20 @@ export const getAllAdminsController = asyncHandler(
 			throw new ServerError(400, `Cannot exceed total pages of ${totalPages}`);
 
 		res.json({
-			admins: results.admins,
-			pagination: {
-				limit,
-				page,
-				totalPages,
-				nextPage,
-				prevPage,
-				totalCount: results.totalCount,
+			success: true,
+			error: null,
+			results: {
+				data: {
+					admins: results.admins,
+				},
+				pagination: {
+					limit,
+					page,
+					totalPages,
+					nextPage,
+					prevPage,
+					totalCount: results.totalCount,
+				},
 			},
 		});
 	},
