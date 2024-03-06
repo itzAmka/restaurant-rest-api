@@ -65,7 +65,15 @@ export const getAdminByIdController = asyncHandler(
 
 		const admin = await getAdminByIdServices(id);
 
-		res.json({ admin });
+		res.json({
+			success: true,
+			error: null,
+			results: {
+				data: {
+					admin,
+				},
+			},
+		});
 	},
 );
 
