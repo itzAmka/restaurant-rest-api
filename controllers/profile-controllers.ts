@@ -121,6 +121,12 @@ export const deleteAdminByIdController = asyncHandler(
 
 		const deletedAdmin = await deleteAdminByIdServices(id);
 
-		res.json({ deletedAdmin });
+		res.json({
+			success: true,
+			error: null,
+			results: {
+				deletedAdmin,
+			},
+		});
 	},
 );
