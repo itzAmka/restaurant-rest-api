@@ -28,7 +28,7 @@ export const createOnlineOrderService = async (data: TOnlineOrdersSchema) => {
 	try {
 		const { customerId } = onlineOrdersSchema.parse(data);
 
-		let orderItems = data.orderItems;
+		let orderItems = onlineOrdersSchema.parse(data).orderItems;
 
 		// if there are duplicate menuIds, combine them into one and sum the quantity
 		orderItems = orderItems.reduce(
