@@ -102,7 +102,15 @@ export const updateAdminByIdController = asyncHandler(
 
 		const admin = await updateAdminByIdServices(id, { role });
 
-		res.json({ admin });
+		res.json({
+			success: true,
+			error: null,
+			results: {
+				data: {
+					admin,
+				},
+			},
+		});
 	},
 );
 
