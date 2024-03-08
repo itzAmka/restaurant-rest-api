@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { prisma } from '../../config/prisma';
 import ServerError from '../../utils/server-error';
-import { TPagination } from './store-orders-services';
+import { TPagination } from '../../utils/pagination';
 
 // Get all admins
 export const getAllAdminsServices = async (
