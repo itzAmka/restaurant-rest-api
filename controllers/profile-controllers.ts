@@ -8,6 +8,7 @@ import {
 	deleteAdminByIdServices,
 } from '../services/admin/profile-services';
 import ServerError from '../utils/server-error';
+import { DEFAULT_LIMIT, MAX_LIMIT } from '../utils/pagination';
 
 // Get all admins controller
 export const getAllAdminsController = asyncHandler(
@@ -16,17 +17,17 @@ export const getAllAdminsController = asyncHandler(
 
 		// pagination
 		const page = parseInt((req.query.page as string) ?? 1);
-		const limit = parseInt((req.query.limit as string) ?? 10);
+		const limit = parseInt((req.query.limit as string) ?? DEFAULT_LIMIT);
 		const skip = (page - 1) * limit;
 
 		// handle invalid page and limit
 		if (page < 1 || limit < 1) {
-			throw new ServerError(400, 'Invalid `page` or `limit`');
+			throw new ServerError(400, 'Invalid `page` or `limit` value');
 		}
 
-		// limit cannot be greater than 20
-		if (limit > 20) {
-			throw new ServerError(400, '`limit` cannot be greater than 20');
+		// limit cannot be greater than MAX_LIMIT
+		if (limit > MAX_LIMIT) {
+			throw new ServerError(400, 'value `limit` cannot be greater than 50');
 		}
 
 		const results = await getAllAdminsServices(searchTerm, { limit, skip });
