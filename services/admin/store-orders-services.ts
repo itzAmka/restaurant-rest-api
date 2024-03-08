@@ -7,11 +7,7 @@ import {
 	storeOrdersSchema,
 	type TStoreOrdersSchema,
 } from '../../utils/schema/admin/store-orders-schema';
-
-export type TPagination = {
-	limit: number;
-	skip: number;
-};
+import { TPagination } from 'utils/pagination';
 
 export type TUpdateStoreOrderStatus = {
 	orderStatus:

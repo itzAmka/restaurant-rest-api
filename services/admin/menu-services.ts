@@ -4,11 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { prisma } from '../../config/prisma';
 import ServerError from '../../utils/server-error';
 import { menuSchema, type TMenu } from '../../utils/schema/admin/menu-schema';
-
-export type TPagination = {
-	limit: number;
-	skip: number;
-};
+import { TPagination } from './profile-services';
 
 // Create menu
 export const createMenuService = async (data: TMenu) => {

@@ -7,11 +7,7 @@ import {
 	customerSchema,
 	type TCustomer,
 } from '../../utils/schema/admin/customer-schema';
-
-export type TPagination = {
-	limit: number;
-	skip: number;
-};
+import { TPagination } from './profile-services';
 
 // Create customer
 export const createCustomerService = async (data: TCustomer) => {

@@ -7,11 +7,7 @@ import {
 	onlineOrdersSchema,
 	type TOnlineOrdersSchema,
 } from '../utils/schema/online-orders-schema';
-
-export type TPagination = {
-	limit: number;
-	skip: number;
-};
+import { TPagination } from 'utils/pagination';
 
 export type TUpdateOnlineOrderStatus = {
 	orderStatus:

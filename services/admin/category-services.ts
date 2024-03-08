@@ -7,11 +7,7 @@ import {
 	type TCategoryData,
 } from '../../utils/schema/admin/category-schema';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-
-export type TPagination = {
-	limit: number;
-	skip: number;
-};
+import { TPagination } from './profile-services';
 
 // Get all categories
 export const getCategoriesService = async (
